@@ -14,14 +14,20 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
     padding: 0;
+    /* Se necessário, adicione um padding-top para compensar a navbar fixa */
+    padding-top: 70px;
 }
 
-// Navbar com visual moderno
+// Navbar fixa ao topo
 .navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1050; // valor alto para garantir sobreposição
     background-color: $navbar-bg;
     background-image: linear-gradient(90deg, color.adjust($navbar-bg, $lightness: -5%), $navbar-bg);
     min-height: 70px;
-    width: 100%;
     border-bottom: 1px solid rgba($text-color, 0.1);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     padding: 0 1rem;

@@ -1,26 +1,98 @@
-:host {
-    display: block;
+@use 'sass:color';
+
+$background-dark: #121212; // Fundo global da página
+$page-bg-pattern: #1c1c1c; // Fundo do container
+$text-light: #e0e0e0; // Cor principal do texto
+$accent-skin: #f1c27d; // Acento quente (tom de pele)
+$card-bg: #1e1e1e; // Fundo dos cards
+$hover-card-bg: color.adjust($card-bg, $lightness: 10%); // Fundo dos cards no hover
+$border-dark: #333;
+$shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+$shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.8); // Sombra mais intensa no hover
+
+.dashboard-page {
+    background-color: $background-dark;
+    color: $text-light;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 2rem;
 }
 
+.container {
+    background-color: $page-bg-pattern;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: $shadow;
+    max-width: 1200px;
+    width: 100%;
+    margin: 2rem;
+}
+
+.title {
+    color: $accent-skin;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+/* Container centralizado para os cards */
+.cards-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.5rem;
+}
+
+/* Wrapper para limitar a largura dos cards */
+.card-wrapper {
+    flex: 1 1 300px;
+    max-width: 300px;
+}
+
+/* Estilo dos Dashboard Cards */
 .dashboard-card {
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    background-color: $card-bg;
+    border: none;
+    border-radius: 8px;
+    box-shadow: $shadow;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    color: $text-light;
+    overflow: hidden;
+    text-align: center;
+    position: relative;
+
+    .card-body {
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 180px;
+    }
 
     i {
-        color: #0d6efd;
+        font-size: 2.5rem;
+        color: $accent-skin;
+        margin-bottom: 0.5rem;
+        transition: color 0.2s ease;
     }
 
     h5 {
         font-weight: 500;
-        color: #343a40;
+        margin: 0;
+        color: $text-light;
+        transition: color 0.2s ease;
     }
 
     &:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
-        background-color: #f8f9fa;
+        transform: translateY(-5px);
+        box-shadow: $shadow-hover;
+        background-color: $hover-card-bg;
 
         i {
-            color: #0b5ed7;
+            color: color.adjust($accent-skin, $lightness: -10%);
         }
     }
 }
