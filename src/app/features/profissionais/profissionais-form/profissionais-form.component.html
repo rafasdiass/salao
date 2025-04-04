@@ -1,56 +1,104 @@
-<form [formGroup]="form" (ngSubmit)="submit()" class="p-4 border rounded shadow-sm bg-light">
-    <h5 class="mb-4">
-        <i class="bi bi-person-badge-fill me-2"></i>
-        Cadastro de Profissional
+<form [formGroup]="form" (ngSubmit)="submit()" class="bg-dark text-light p-4 rounded shadow-sm">
+    <h5 class="mb-4 d-flex align-items-center">
+        <i class="bi bi-person-badge-fill me-2 text-warning"></i> Cadastro de Profissional
     </h5>
 
-    <div class="mb-3">
-        <label for="name" class="form-label">
-            <i class="bi bi-person-fill me-1"></i> Nome
-        </label>
-        <input type="text" class="form-control" id="name" formControlName="name" />
+    <!-- Dados Pessoais -->
+    <div class="row g-3">
+        <div class="col-md-6">
+            <label for="name" class="form-label">Nome</label>
+            <input id="name" type="text" class="form-control" formControlName="name" />
+        </div>
+        <div class="col-md-6">
+            <label for="birthDate" class="form-label">Data de Nascimento</label>
+            <input id="birthDate" type="date" class="form-control" formControlName="birthDate" />
+        </div>
+        <div class="col-md-6">
+            <label for="phone" class="form-label">Telefone</label>
+            <input id="phone" type="tel" class="form-control" formControlName="phone" />
+        </div>
+        <div class="col-md-6">
+            <label for="email" class="form-label">E-mail</label>
+            <input id="email" type="email" class="form-control" formControlName="email" />
+        </div>
+        <div class="col-md-6">
+            <label for="password" class="form-label">Senha</label>
+            <input id="password" type="password" class="form-control" formControlName="password" />
+        </div>
+        <div class="col-md-6">
+            <label for="profileImageUrl" class="form-label">Foto de Perfil (URL)</label>
+            <input id="profileImageUrl" type="url" class="form-control" formControlName="profileImageUrl" />
+        </div>
     </div>
 
-    <div class="mb-3">
-        <label for="phone" class="form-label">
-            <i class="bi bi-telephone-fill me-1"></i> Telefone
-        </label>
-        <input type="tel" class="form-control" id="phone" formControlName="phone" />
+    <hr class="border-secondary my-4" />
+
+    <!-- Endereço -->
+    <h6 class="mb-3 text-warning">Endereço</h6>
+    <div formGroupName="address" class="row g-3">
+        <div class="col-md-6">
+            <label for="street" class="form-label">Rua</label>
+            <input id="street" type="text" class="form-control" formControlName="street" />
+        </div>
+        <div class="col-md-3">
+            <label for="number" class="form-label">Número</label>
+            <input id="number" type="text" class="form-control" formControlName="number" />
+        </div>
+        <div class="col-md-3">
+            <label for="complement" class="form-label">Complemento</label>
+            <input id="complement" type="text" class="form-control" formControlName="complement" />
+        </div>
+        <div class="col-md-4">
+            <label for="neighborhood" class="form-label">Bairro</label>
+            <input id="neighborhood" type="text" class="form-control" formControlName="neighborhood" />
+        </div>
+        <div class="col-md-4">
+            <label for="city" class="form-label">Cidade</label>
+            <input id="city" type="text" class="form-control" formControlName="city" />
+        </div>
+        <div class="col-md-2">
+            <label for="state" class="form-label">Estado</label>
+            <input id="state" type="text" class="form-control" formControlName="state" />
+        </div>
+        <div class="col-md-2">
+            <label for="zipCode" class="form-label">CEP</label>
+            <input id="zipCode" type="text" class="form-control" formControlName="zipCode" />
+        </div>
+        <div class="col-md-12">
+            <label for="country" class="form-label">País</label>
+            <input id="country" type="text" class="form-control" formControlName="country" />
+        </div>
     </div>
 
-    <div class="mb-3">
-        <label for="email" class="form-label">
-            <i class="bi bi-envelope-fill me-1"></i> E-mail
-        </label>
-        <input type="email" class="form-control" id="email" formControlName="email" />
+
+    <hr class="border-secondary my-4" />
+
+    <!-- Profissional -->
+    <h6 class="mb-3 text-warning">Informações Profissionais</h6>
+    <div class="row g-3">
+        <div class="col-md-8">
+            <label for="specialties" class="form-label">Especialidades</label>
+            <input id="specialties" type="text" class="form-control"
+                [value]="form.controls.specialties.value.join(', ')" (change)="onSpecialtiesChange($event)"
+                placeholder="Ex: corte, escova, coloração" />
+            <small class="text-muted">Separe por vírgulas</small>
+        </div>
+        <div class="col-md-4">
+            <label for="commission" class="form-label">Comissão (%)</label>
+            <input id="commission" type="number" class="form-control" formControlName="commission" />
+        </div>
+        <div class="col-md-12 d-flex align-items-center mt-2">
+            <input id="isActive" type="checkbox" class="form-check-input me-2" formControlName="isActive" />
+            <label for="isActive" class="form-check-label">
+                <i class="bi bi-check-circle-fill text-success me-1"></i> Ativo
+            </label>
+        </div>
     </div>
 
-    <div class="mb-3">
-        <label for="specialties" class="form-label">
-            <i class="bi bi-scissors me-1"></i> Especialidades
-        </label>
-        <input type="text" class="form-control" id="specialties" [value]="form.controls.specialties.value.join(', ')"
-            (change)="onSpecialtiesChange($event)" placeholder="Ex: corte, escova, coloração" />
-        <small class="text-muted">Separe por vírgulas</small>
-    </div>
-
-    <div class="mb-3">
-        <label for="commission" class="form-label">
-            <i class="bi bi-percent me-1"></i> Comissão (%)
-        </label>
-        <input type="number" class="form-control" id="commission" formControlName="commission" />
-    </div>
-
-    <div class="form-check form-switch mb-4">
-        <input class="form-check-input" type="checkbox" id="isActive" formControlName="isActive" />
-        <label class="form-check-label" for="isActive">
-            <i class="bi bi-check-circle-fill me-1 text-success"></i> Ativo
-        </label>
-    </div>
-
-    <div class="d-flex justify-content-end">
-        <button type="submit" class="btn btn-primary" [disabled]="form.invalid">
-            <i class="bi bi-save me-1"></i> Salvar
+    <!-- Botão -->
+    <div class="d-flex justify-content-end mt-4">
+        <button type="submit" class="btn btn-warning text-dark" [disabled]="form.invalid">
+            <i class="bi bi-save me-2"></i>Salvar Profissional
         </button>
     </div>
 </form>

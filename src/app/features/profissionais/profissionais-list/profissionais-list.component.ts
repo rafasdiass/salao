@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ProfessionalService } from '../../../shared/services/profissionais.service';
-import { Professional } from '../../../shared/models/models';
+import { EmployeeUser } from '../../../shared/models/models';
 import { signal, computed, effect } from '@angular/core';
 
 @Component({
@@ -16,7 +16,7 @@ export class ProfissionaisListComponent {
 
   private readonly _loading = signal(true);
   private readonly _error = signal<string | null>(null);
-  private readonly _professionals = signal<Professional[]>([]);
+  private readonly _professionals = signal<EmployeeUser[]>([]);
 
   readonly loading = computed(() => this._loading());
   readonly error = computed(() => this._error());
@@ -36,7 +36,11 @@ export class ProfissionaisListComponent {
     this._error.set(null);
     try {
       await this.service.load();
-      this._professionals.set(this.service.professionals());
+      const all = this.service.professionals();
+      const employees = all.filter(
+        (u): u is EmployeeUser => u.role === 'employee'
+      );
+      this._professionals.set(employees);
     } catch (err) {
       console.error('[ProfissionaisList] Erro ao carregar:', err);
       this._error.set('Erro ao carregar profissionais');
@@ -45,7 +49,7 @@ export class ProfissionaisListComponent {
     }
   }
 
-  async remove(professional: Professional): Promise<void> {
+  async remove(professional: EmployeeUser): Promise<void> {
     const confirmed = confirm(
       `Deseja remover o profissional ${professional.name}?`
     );

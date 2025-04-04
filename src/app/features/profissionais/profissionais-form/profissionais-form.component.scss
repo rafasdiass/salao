@@ -1,59 +1,66 @@
+@use 'sass:color';
+
+$form-bg: #1e1e2a;
+$text-color: #f1f1f1;
+$accent: #f1c27d;
+$accent-hover: color.adjust($accent, $lightness: -10%);
+$card-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.6);
+
 :host {
     display: block;
-    max-width: 700px;
-    margin: 0 auto;
-    padding-bottom: 2rem;
+    background-color: #121212;
+    min-height: 100vh;
+    padding-top: 2rem;
+    color: $text-color;
 }
 
-form {
-    background-color: #f8f9fa;
-    border-left: 5px solid #0d6efd;
-    border-radius: 0.5rem;
-    padding: 2rem;
-    box-shadow: 0 0 1rem rgba(0, 0, 0, 0.05);
+.form-wrapper {
+    max-width: 800px;
+}
 
-    h5 {
-        font-weight: 600;
-        color: #0d6efd;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
+.form-card {
+    background-color: $form-bg;
+    color: $text-color;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: $card-shadow;
+}
 
-    .form-label {
-        font-weight: 500;
-        color: #495057;
-    }
+.text-accent {
+    color: $accent;
+}
 
-    input[type='text'],
-    input[type='tel'],
-    input[type='email'],
-    input[type='number'] {
-        font-size: 0.95rem;
-        padding: 0.5rem 0.75rem;
-    }
+.btn-accent {
+    background-color: $accent;
+    border: none;
+    color: #000;
+    font-weight: 500;
+    padding: 0.5rem 1.25rem;
+    transition: background-color 0.3s ease;
 
-    .form-check-label {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        font-weight: 500;
-        color: #198754;
+    &:hover {
+        background-color: $accent-hover;
+        color: #000;
     }
+}
 
-    .btn-primary {
-        min-width: 160px;
-        font-weight: 500;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-        padding: 0.5rem 1.25rem;
-    }
+.form-label {
+    font-weight: 500;
+}
 
-    small.text-muted {
-        font-size: 0.8rem;
-        margin-top: -0.25rem;
-        display: block;
+input.form-control,
+textarea.form-control {
+    background-color: #2a2a3b;
+    border: 1px solid #3b3b4d;
+    color: $text-color;
+
+    &:focus {
+        border-color: $accent;
+        box-shadow: 0 0 0 0.2rem rgba($accent, 0.25);
     }
+}
+
+.form-check-input:checked {
+    background-color: $accent;
+    border-color: $accent;
 }

@@ -10,16 +10,14 @@ import {
   query,
   where,
 } from '@angular/fire/firestore';
-import { Professional } from '../models/models';
-import { AuthService } from './auth.service';
+import { EmployeeUser } from '../models/models';
 
 @Injectable({ providedIn: 'root' })
 export class ProfessionalService {
   private readonly firestore = inject(Firestore);
-  private readonly auth = inject(AuthService);
-  private readonly path = 'professionals';
+  private readonly path = 'users'; // Agora os profissionais estão dentro da coleção de usuários
 
-  private readonly _professionals = signal<Professional[]>([]);
+  private readonly _professionals = signal<EmployeeUser[]>([]);
   private readonly _loading = signal<boolean>(false);
   private readonly _error = signal<string | null>(null);
 
@@ -27,17 +25,16 @@ export class ProfessionalService {
   readonly loading = computed(() => this._loading());
   readonly error = computed(() => this._error());
 
-  /** Carrega profissionais filtrando pela empresa da pessoa logada */
+  /** Carrega todos os profissionais (usuários com role: 'employee') */
   async load(): Promise<void> {
     this._loading.set(true);
     this._error.set(null);
 
     try {
-      const companyId = this.auth.getCompanyId();
       const ref = collection(this.firestore, this.path);
-      const q = query(ref, where('companyIds', 'array-contains', companyId));
+      const q = query(ref, where('role', '==', 'employee'));
       const data = await collectionData(q, { idField: 'id' }).toPromise();
-      this._professionals.set(data as Professional[]);
+      this._professionals.set(data as EmployeeUser[]);
     } catch (err) {
       console.error(
         '[ProfessionalService] Erro ao carregar profissionais:',
@@ -49,17 +46,17 @@ export class ProfessionalService {
     }
   }
 
-  /** Cria um novo profissional associado à empresa logada */
-  async create(professional: Omit<Professional, 'id'>): Promise<void> {
+  /** Cria um novo profissional (role: 'employee') */
+  async create(professional: Omit<EmployeeUser, 'id'>): Promise<void> {
     this._loading.set(true);
     this._error.set(null);
 
     try {
       const ref = collection(this.firestore, this.path);
-      const docRef = await addDoc(ref, professional);
+      const docRef = await addDoc(ref, { ...professional, role: 'employee' });
       this._professionals.update((list) => [
         ...list,
-        { ...professional, id: docRef.id },
+        { ...professional, id: docRef.id, role: 'employee' },
       ]);
     } catch (err) {
       console.error('[ProfessionalService] Erro ao criar profissional:', err);
@@ -69,7 +66,7 @@ export class ProfessionalService {
     }
   }
 
-  /** Remove um profissional do Firestore e do estado */
+  /** Remove um profissional do Firestore e do estado local */
   async delete(id: string): Promise<void> {
     try {
       const ref = doc(this.firestore, `${this.path}/${id}`);
@@ -81,7 +78,7 @@ export class ProfessionalService {
   }
 
   /** Atualiza um profissional no Firestore e no estado local */
-  async update(id: string, data: Partial<Professional>): Promise<void> {
+  async update(id: string, data: Partial<EmployeeUser>): Promise<void> {
     try {
       const ref = doc(this.firestore, `${this.path}/${id}`);
       await updateDoc(ref, data);
@@ -96,8 +93,8 @@ export class ProfessionalService {
     }
   }
 
-  /** Retorna um profissional pelo ID */
-  getById(id: string): Professional | undefined {
+  /** Busca um profissional pelo ID */
+  getById(id: string): EmployeeUser | undefined {
     return this._professionals().find((p) => p.id === id);
   }
 }

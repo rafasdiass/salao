@@ -11,11 +11,9 @@ import {
   updateProfile,
   Auth,
 } from 'firebase/auth';
-import { User } from '../models/models';
+import { User, ClientUser, Address } from '../models/models';
 import { RegisterService } from './register.service';
 import { UserService } from './user.service';
-import { from, of } from 'rxjs';
-import { map, catchError, switchMap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -23,8 +21,6 @@ import { map, catchError, switchMap } from 'rxjs/operators';
 export class AuthService {
   private auth: Auth = getAuth();
 
-  // Removemos a inicialização de propriedades que dependem do userService
-  // e usamos getters para expor valores computados.
   get isLoggedIn() {
     return this.userService.isLoggedIn;
   }
@@ -38,6 +34,19 @@ export class AuthService {
     this.monitorAuthState();
   }
 
+  private getDefaultAddress(): Address {
+    return {
+      street: '',
+      number: '',
+      complement: '',
+      neighborhood: '',
+      city: '',
+      state: '',
+      zipCode: '',
+      country: 'Brasil',
+    };
+  }
+
   /**
    * Monitora o estado de autenticação e atualiza o UserService.
    */
@@ -45,13 +54,14 @@ export class AuthService {
     onAuthStateChanged(this.auth, (firebaseUser) => {
       if (firebaseUser) {
         console.log('Usuário autenticado:', firebaseUser);
-        const user: User = {
+        const user: ClientUser = {
           id: firebaseUser.uid,
           email: firebaseUser.email || '',
           name: firebaseUser.displayName || '',
-          role: 'client', // Valor padrão; ajuste conforme necessário
+          role: 'client',
           createdAt: new Date(),
           updatedAt: new Date(),
+          address: this.getDefaultAddress(),
         };
         this.userService.setUser(user);
       } else {
@@ -62,46 +72,48 @@ export class AuthService {
   }
 
   /**
-   * Registra um novo usuário e salva os dados no Firestore.
-   * @param email Email do usuário.
-   * @param password Senha do usuário.
-   * @param name Nome do usuário.
+   * Registra um novo usuário cliente e salva os dados no Firestore.
    */
   async register(
     email: string,
     password: string,
     name: string
-  ): Promise<User | null> {
-    console.log(`Registrando usuário com email: ${email}`);
+  ): Promise<ClientUser | null> {
+    console.log(`Registrando cliente com email: ${email}`);
     try {
       const userCredential = await createUserWithEmailAndPassword(
         this.auth,
         email,
         password
       );
+
       const firebaseUser = userCredential.user;
-      console.log('Usuário registrado no Firebase Auth:', firebaseUser);
       await updateProfile(firebaseUser, { displayName: name });
-      const newUser: User = {
+
+      const newUser: ClientUser = {
         id: firebaseUser.uid,
         email: firebaseUser.email || '',
-        name: name,
+        name,
         role: 'client',
         createdAt: new Date(),
         updatedAt: new Date(),
+        address: this.getDefaultAddress(),
       };
+
       const success = await this.registerService.saveUserData(
         firebaseUser.uid,
         newUser
       );
+
       if (success) {
         await sendEmailVerification(firebaseUser);
         this.userService.setUser(newUser);
         return newUser;
       }
+
       return null;
     } catch (error) {
-      console.error('Erro ao registrar o usuário:', error);
+      console.error('Erro ao registrar cliente:', error);
       return null;
     }
   }
@@ -117,16 +129,19 @@ export class AuthService {
         email,
         password
       );
+
       const firebaseUser = userCredential.user;
-      console.log('Login bem-sucedido:', firebaseUser);
-      const user: User = {
+
+      const user: ClientUser = {
         id: firebaseUser.uid,
         email: firebaseUser.email || '',
         name: firebaseUser.displayName || '',
         role: 'client',
         createdAt: new Date(),
         updatedAt: new Date(),
+        address: this.getDefaultAddress(),
       };
+
       this.userService.setUser(user);
       return user;
     } catch (error) {
@@ -165,30 +180,30 @@ export class AuthService {
   }
 
   /**
-   * Atualiza o perfil do usuário autenticado.
+   * Atualiza o nome do perfil do usuário autenticado.
    */
   async updateUserProfile(name: string): Promise<boolean> {
     const currentUser = this.auth.currentUser;
-    if (currentUser) {
-      try {
-        await updateProfile(currentUser, { displayName: name });
-        const updatedUser: User = {
-          id: currentUser.uid,
-          email: currentUser.email || '',
-          name: name,
-          role: 'client',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        };
-        this.userService.setUser(updatedUser);
-        console.log('Perfil do usuário atualizado com sucesso.');
-        return true;
-      } catch (error) {
-        console.error('Erro ao atualizar o perfil do usuário:', error);
-        return false;
-      }
-    } else {
-      console.warn('Nenhum usuário autenticado para atualizar o perfil.');
+    if (!currentUser) return false;
+
+    try {
+      await updateProfile(currentUser, { displayName: name });
+
+      const updatedUser: ClientUser = {
+        id: currentUser.uid,
+        email: currentUser.email || '',
+        name,
+        role: 'client',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        address: this.getDefaultAddress(),
+      };
+
+      this.userService.setUser(updatedUser);
+      console.log('Perfil atualizado com sucesso.');
+      return true;
+    } catch (error) {
+      console.error('Erro ao atualizar perfil:', error);
       return false;
     }
   }

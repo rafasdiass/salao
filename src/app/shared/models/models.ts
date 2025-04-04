@@ -41,9 +41,8 @@ export interface Client extends BaseEntity, Person {
   lastVisit?: Date;
 }
 
-/* ========== PROFESSIONAL ========== */
+/* ========== PROFESSIONAL (LEGADO - OPCIONAL) ========== */
 export interface Professional extends BaseEntity, Person {
-  // Caso seja necessário, pode incluir endereço também
   specialties: string[]; // IDs dos serviços que o profissional realiza
   isActive: boolean;
   commission?: number;
@@ -97,11 +96,8 @@ export interface Appointment extends BaseEntity {
   createdBy?: string;
 }
 
-/* ========== USUÁRIO ========== */
-export interface User extends UserBase {
-  role: 'admin' | 'employee' | 'client';
-  permissions?: string[];
-}
+/* ========== USUÁRIO (UNIFICADO COM ENDEREÇO) ========== */
+export type User = AdminUser | ClientUser | EmployeeUser;
 
 export interface UserBase extends Person, BaseEntity {
   email: string;
@@ -109,6 +105,28 @@ export interface UserBase extends Person, BaseEntity {
   isActive?: boolean;
   lastLogin?: Date;
   profileImageUrl?: string;
+  address: Address; // ✅ Agora todos os usuários possuem endereço
+}
+
+/** Usuário administrador */
+export interface AdminUser extends UserBase {
+  role: 'admin';
+  permissions?: string[];
+}
+
+/** Usuário cliente */
+export interface ClientUser extends UserBase {
+  role: 'client';
+}
+
+/** Usuário funcionário */
+export interface EmployeeUser extends UserBase {
+  role: 'employee';
+  isActive: boolean;
+  specialties: string[];
+  commission?: number;
+  workingHours?: Record<WeekDay, { start: string; end: string }>;
+  daysOff?: Date[];
 }
 
 /* ========== NOTIFICAÇÃO ========== */
