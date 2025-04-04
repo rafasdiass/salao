@@ -7,6 +7,7 @@ import {
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ClientsService } from '../../../shared/services/clients.service';
+import { Client } from '../../../shared/models/models';
 
 @Component({
   selector: 'app-clients-form',
@@ -44,7 +45,10 @@ export class ClientsFormComponent {
       nonNullable: true,
       validators: [Validators.required, Validators.email],
     }),
-    birthDate: new FormControl('', { nonNullable: true }),
+    birthDate: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required],
+    }),
     notes: new FormControl('', { nonNullable: true }),
     address: new FormGroup({
       street: new FormControl('', {
@@ -81,11 +85,17 @@ export class ClientsFormComponent {
 
     const raw = this.form.getRawValue();
 
-    const client = {
+    const birthDate = this.toValidDate(raw.birthDate);
+    if (!birthDate) {
+      alert('Data de nascimento inválida.');
+      return;
+    }
+
+    const client: Omit<Client, 'id'> = {
       name: raw.name,
       phone: raw.phone,
       email: raw.email,
-      birthDate: new Date(raw.birthDate),
+      birthDate,
       notes: raw.notes,
       address: {
         street: raw.address.street,
@@ -101,5 +111,13 @@ export class ClientsFormComponent {
 
     await this.clientsService.create(client);
     this.form.reset();
+  }
+
+  /**
+   * Converte uma string de data em objeto Date válido ou retorna undefined.
+   */
+  private toValidDate(input: string): Date | undefined {
+    const date = new Date(input);
+    return isNaN(date.getTime()) ? undefined : date;
   }
 }
