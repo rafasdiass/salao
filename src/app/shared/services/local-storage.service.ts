@@ -5,15 +5,12 @@ import { isPlatformBrowser } from '@angular/common';
   providedIn: 'root',
 })
 export class LocalStorageService {
-
   constructor(@Inject(PLATFORM_ID) private platformId: object) {}
 
-  // Verifica se o código está sendo executado no navegador
   private isBrowser(): boolean {
     return isPlatformBrowser(this.platformId);
   }
 
-  // Verifica se o navegador suporta localStorage
   private isLocalStorageSupported(): boolean {
     if (!this.isBrowser()) {
       return false;
@@ -29,7 +26,6 @@ export class LocalStorageService {
     }
   }
 
-  // Método para guardar dados no localStorage
   public guardarDados<T>(chave: string, data: T): void {
     if (this.isLocalStorageSupported()) {
       try {
@@ -38,27 +34,34 @@ export class LocalStorageService {
         console.error('Erro ao salvar no localStorage', error);
       }
     } else {
-      console.warn('Tentativa de acessar localStorage em ambiente não suportado ou fora do navegador.');
+      console.warn(
+        'Tentativa de acessar localStorage em ambiente não suportado ou fora do navegador.'
+      );
     }
   }
 
-  // Método para obter dados do localStorage
   public obterDados<T>(chave: string): T | null {
     if (this.isLocalStorageSupported()) {
       try {
         const dadosSalvos = localStorage.getItem(chave);
-        return dadosSalvos ? JSON.parse(dadosSalvos) as T : null;
+        return dadosSalvos ? (JSON.parse(dadosSalvos) as T) : null;
       } catch (error) {
         console.error('Erro ao ler do localStorage', error);
         return null;
       }
     } else {
-      console.warn('Tentativa de acessar localStorage em ambiente não suportado ou fora do navegador.');
+      console.warn(
+        'Tentativa de acessar localStorage em ambiente não suportado ou fora do navegador.'
+      );
       return null;
     }
   }
 
-  // Método para remover dados do localStorage
+  // Alias para obterDados
+  public getItem<T>(chave: string): T | null {
+    return this.obterDados<T>(chave);
+  }
+
   public limparDados(chave: string): void {
     if (this.isLocalStorageSupported()) {
       try {
@@ -67,7 +70,9 @@ export class LocalStorageService {
         console.error('Erro ao remover do localStorage', error);
       }
     } else {
-      console.warn('Tentativa de acessar localStorage em ambiente não suportado ou fora do navegador.');
+      console.warn(
+        'Tentativa de acessar localStorage em ambiente não suportado ou fora do navegador.'
+      );
     }
   }
 }

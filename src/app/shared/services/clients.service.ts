@@ -1,4 +1,4 @@
-import { Injectable, inject, signal, computed, effect } from '@angular/core';
+import { Injectable, inject, signal, computed } from '@angular/core';
 import {
   Firestore,
   collection,
@@ -16,22 +16,20 @@ export class ClientsService {
   private readonly firestore = inject(Firestore);
   private readonly basePath = 'clients';
 
-  // === Estado interno ===
+  // Estado interno
   private readonly _clients = signal<Client[]>([]);
   private readonly _loading = signal<boolean>(false);
   private readonly _error = signal<string | null>(null);
 
-  // === Signals Computados ===
+  // Signals Computados
   readonly clients = computed(() => this._clients());
   readonly loading = computed(() => this._loading());
   readonly error = computed(() => this._error());
   readonly hasClients = computed(() => this._clients().length > 0);
 
   constructor() {
-    // Carrega os clientes automaticamente sempre que o serviço é instanciado
-    effect(() => {
-      this.loadClients();
-    });
+    // Chama loadClients() diretamente no construtor (fora de um effect)
+    this.loadClients();
   }
 
   /** Carrega clientes do Firestore */
@@ -44,6 +42,7 @@ export class ClientsService {
       const data$ = collectionData(ref, {
         idField: 'id',
       }) as unknown as import('rxjs').Observable<Client[]>;
+      // Chamada a toSignal() fora de um contexto reativo
       const clients = await toSignal(data$, { initialValue: [] })();
       this._clients.set(clients);
     } catch (err) {
@@ -89,7 +88,7 @@ export class ClientsService {
     }
   }
 
-  /** Atualiza cliente no Firestore e atualiza o estado local */
+  /** Atualiza cliente no Firestore e no estado local */
   async update(id: string, updated: Partial<Client>): Promise<void> {
     this._loading.set(true);
     this._error.set(null);
@@ -106,7 +105,7 @@ export class ClientsService {
     }
   }
 
-  /** Atualiza o estado local */
+  /** Atualiza apenas o estado local */
   updateLocal(id: string, updated: Partial<Client>): void {
     this._clients.update((list) =>
       list.map((client) =>
@@ -115,8 +114,8 @@ export class ClientsService {
     );
   }
 
-  /** Busca um cliente por ID */
+  /** Busca cliente por ID */
   getById(id: string): Client | undefined {
-    return this._clients().find((client) => client.id === id);
+    return this._clients().find((c) => c.id === id);
   }
 }
