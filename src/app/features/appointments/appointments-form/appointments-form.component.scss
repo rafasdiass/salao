@@ -1,3 +1,5 @@
+@use 'sass:color';
+
 // Variáveis para a paleta dark com acentos quentes
 $background-dark: #1c1c1c;
 $input-bg: #2a2a2a;
@@ -6,7 +8,7 @@ $accent-skin: #f1c27d; // Tom de pele quente para acentos
 $border-dark: #333;
 $shadow-dark: 0 2px 4px rgba(0, 0, 0, 0.7);
 
-.clients-form {
+.appointments-form {
     background-color: $background-dark;
     padding: 1.5rem;
     border-radius: 8px;
@@ -65,11 +67,11 @@ $shadow-dark: 0 2px 4px rgba(0, 0, 0, 0.7);
         cursor: pointer;
 
         &:hover {
-            background-color: darken($accent-skin, 10%);
+            background-color: color.adjust($accent-skin, $lightness: -10%);
         }
 
         &:disabled {
-            background-color: darken($accent-skin, 10%);
+            background-color: color.adjust($accent-skin, $lightness: -10%);
             cursor: not-allowed;
         }
     }

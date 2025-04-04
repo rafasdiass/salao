@@ -10,13 +10,14 @@ import {
 import { AppointmentService } from '../../../shared/services/appointments.service';
 import { ClientsService } from '../../../shared/services/clients.service';
 import { ServicesService } from '../../../shared/services/services.service';
-import { Client, Service } from '../../../shared/models/models';
+import { Appointment, Client, Service } from '../../../shared/models/models';
 
 @Component({
   selector: 'app-appointments-form',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './appointments-form.component.html',
+  styleUrls: ['./appointments-form.component.scss'],
 })
 export class AppointmentsFormComponent {
   private readonly fb = inject(FormBuilder);
@@ -24,12 +25,13 @@ export class AppointmentsFormComponent {
   private readonly clientsService = inject(ClientsService);
   private readonly servicesService = inject(ServicesService);
 
+  // Sinais para os dados de clientes e serviços
   readonly clients: Signal<Client[]> = this.clientsService.clients;
   readonly services: Signal<Service[]> = this.servicesService.services;
   readonly loadingClients = this.clientsService.loading;
   readonly loadingServices = this.servicesService.loading;
 
-  // Tipagem explícita para evitar `string | null`
+  // Formulário com tipagem explícita
   form: FormGroup<{
     clientId: FormControl<string>;
     serviceId: FormControl<string>;
@@ -56,18 +58,20 @@ export class AppointmentsFormComponent {
     notes: this.fb.control('', { nonNullable: true }),
   });
 
-  // Computed para obter o serviço selecionado com base no ID do formulário
+  // Computed para obter o serviço selecionado pelo usuário, baseado no ID do formulário
   selectedService = computed((): Service | null => {
     const serviceId = this.form.controls.serviceId.value;
     return this.services().find((s) => s.id === serviceId) ?? null;
   });
 
   async submit(): Promise<void> {
+    // Se o formulário for inválido ou o serviço selecionado não existir, não prossegue
     if (this.form.invalid || !this.selectedService()) return;
 
     const { clientId, serviceId, date, time, notes } = this.form.getRawValue();
     const service = this.selectedService()!;
 
+    // Cria a data/hora de início com base no input e calcula a data/hora final conforme a duração do serviço
     const startTime = new Date(`${date}T${time}`);
     const endTime = new Date(startTime.getTime() + service.duration * 60000);
 
@@ -84,6 +88,7 @@ export class AppointmentsFormComponent {
       createdBy: '',
     });
 
+    // Reseta o formulário após a criação do agendamento
     this.form.reset();
   }
 }
