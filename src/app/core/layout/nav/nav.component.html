@@ -1,0 +1,27 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm" role="navigation" aria-label="Main navigation">
+    <div class="container-fluid">
+        <a class="navbar-brand d-flex align-items-center" routerLink="/" aria-label="RS Estetica Home">
+            <i class="bi bi-scissors me-2" aria-hidden="true"></i>
+            <span>RS Estetica</span>
+        </a>
+
+        <!-- Botão de toggle com atributos de acessibilidade -->
+        <button class="navbar-toggler" type="button" (click)="toggleNavbar()" aria-controls="navbarNav"
+            [attr.aria-expanded]="navbarService.isNavbarOpen()" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Área colapsável com ID para associação com o botão -->
+        <div class="collapse navbar-collapse" id="navbarNav" [class.show]="navbarService.isNavbarOpen()">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item" *ngFor="let link of navLinks">
+                    <a class="nav-link" [routerLink]="link.route" routerLinkActive="active"
+                        [routerLinkActiveOptions]="{ exact: true }" (click)="navbarService.closeNavbar()">
+                        <i class="bi me-1" [ngClass]="link.icon" aria-hidden="true"></i>
+                        <span>{{ link.label }}</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>

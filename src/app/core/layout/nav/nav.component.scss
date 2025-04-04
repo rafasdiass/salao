@@ -1,0 +1,85 @@
+@use 'sass:color';
+
+// Variáveis de Tema
+$background-dark: #1e1e2f; // Fundo global escuro
+$navbar-bg: #2c2c3e; // Fundo da navbar
+$text-color: #f8f9fa; // Cor principal do texto
+$accent-color: #e0a800; // Tom dourado para destaque (ex.: logo, link ativo)
+$hover-bg-color: #3a3a4f; // Fundo para hover nos links
+
+// Estilização Global (opcional, para manter o dark consistente)
+body {
+    background-color: $background-dark;
+    color: $text-color;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+// Navbar com visual moderno
+.navbar {
+    background-color: $navbar-bg;
+    background-image: linear-gradient(90deg, color.adjust($navbar-bg, $lightness: -5%), $navbar-bg);
+    min-height: 70px;
+    width: 100%;
+    border-bottom: 1px solid rgba($text-color, 0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 0 1rem;
+}
+
+// Marca da navbar com destaque
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: $accent-color;
+    padding: 0.5rem 1rem;
+    transition: color 0.3s ease;
+
+    &:hover {
+        color: color.adjust($accent-color, $lightness: 10%);
+    }
+}
+
+// Botão de toggle
+.navbar-toggler {
+    border: none;
+    background: transparent;
+    padding: 0.5rem;
+
+    &:focus {
+        outline: none;
+        box-shadow: none;
+    }
+}
+
+// Área colapsável com transição suave
+.navbar-collapse {
+    transition: max-height 0.3s ease;
+}
+
+// Estilização dos links de navegação
+.nav-link {
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: $text-color;
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.3s, color 0.3s;
+    border-radius: 0.25rem;
+
+    &:hover {
+        background-color: $hover-bg-color;
+        color: color.adjust($text-color, $lightness: 10%);
+    }
+
+    &.active {
+        color: $accent-color !important;
+        font-weight: 600;
+    }
+
+    i {
+        font-size: 1.1rem;
+        margin-right: 0.5rem;
+    }
+}
