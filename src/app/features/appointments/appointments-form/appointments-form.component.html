@@ -1,14 +1,12 @@
-<form [formGroup]="form" (ngSubmit)="submit()" class="appointments-form p-4 border rounded shadow-sm">
-    <h5 class="mb-4">
-        <i class="bi bi-calendar-plus me-2"></i>
-        Novo Agendamento
+<form [formGroup]="form" (ngSubmit)="submit()" class="appointments-form p-4 rounded shadow-sm">
+    <h5 class="mb-4 d-flex align-items-center">
+        <i class="bi bi-calendar-plus me-2 text-accent"></i> Novo Agendamento
     </h5>
 
-    <div class="row mb-3">
+    <div class="row g-3">
+        <!-- Cliente -->
         <div class="col-md-6">
-            <label for="clientId" class="form-label">
-                <i class="bi bi-person-fill me-1"></i> Cliente
-            </label>
+            <label for="clientId" class="form-label">Cliente</label>
             <select id="clientId" formControlName="clientId" class="form-select" [disabled]="loadingClients()">
                 <option value="" disabled selected>Selecione um cliente</option>
                 <option *ngFor="let client of clients()" [value]="client.id">
@@ -17,10 +15,9 @@
             </select>
         </div>
 
+        <!-- Serviço -->
         <div class="col-md-6">
-            <label for="serviceId" class="form-label">
-                <i class="bi bi-scissors me-1"></i> Serviço
-            </label>
+            <label for="serviceId" class="form-label">Serviço</label>
             <select id="serviceId" formControlName="serviceId" class="form-select" [disabled]="loadingServices()">
                 <option value="" disabled selected>Selecione um serviço</option>
                 <option *ngFor="let service of services()" [value]="service.id">
@@ -28,34 +25,45 @@
                 </option>
             </select>
         </div>
-    </div>
 
-    <div class="row mb-3">
+        <!-- Profissional -->
         <div class="col-md-6">
-            <label for="date" class="form-label">
-                <i class="bi bi-calendar-event me-1"></i> Data
-            </label>
-            <input id="date" type="date" formControlName="date" class="form-control" />
+            <label for="professionalId" class="form-label">Profissional</label>
+            <select id="professionalId" formControlName="professionalId" class="form-select"
+                [disabled]="loadingProfessionals()">
+                <option value="" disabled selected>Selecione o profissional</option>
+                <option *ngFor="let pro of professionals()" [value]="pro.id">
+                    {{ pro.name }}
+                </option>
+            </select>
         </div>
-        <div class="col-md-6">
-            <label for="time" class="form-label">
-                <i class="bi bi-clock me-1"></i> Hora
-            </label>
-            <input id="time" type="time" formControlName="time" class="form-control" />
+
+        <!-- Data -->
+        <div class="col-md-3">
+            <label for="date" class="form-label">Data</label>
+            <input id="date" type="date" formControlName="date" class="form-control date-input" />
+        </div>
+
+        <!-- Hora -->
+        <div class="col-md-3">
+            <label for="time" class="form-label">Hora</label>
+            <input id="time" type="time" formControlName="time" class="form-control time-input" />
+        </div>
+
+        <!-- Observações -->
+        <div class="col-12">
+            <label for="notes" class="form-label">Observações</label>
+            <textarea id="notes" formControlName="notes" rows="3" class="form-control"
+                placeholder="Ex: cliente prefere atendimento com música ambiente, etc.">
+      </textarea>
         </div>
     </div>
 
-    <div class="mb-3">
-        <label for="notes" class="form-label">
-            <i class="bi bi-pencil-square me-1"></i> Observações
-        </label>
-        <textarea id="notes" formControlName="notes" rows="3" class="form-control"></textarea>
-    </div>
-
-    <div class="d-flex justify-content-end">
-        <button type="submit" class="btn btn-primary"
-            [disabled]="form.invalid || loadingClients() || loadingServices()">
-            <i class="bi bi-check-circle me-1"></i> Agendar
+    <!-- Botão -->
+    <div class="d-flex justify-content-end mt-4">
+        <button type="submit" class="btn btn-accent"
+            [disabled]="form.invalid || loadingClients() || loadingServices() || loadingProfessionals()">
+            <i class="bi bi-check-circle me-2"></i> Agendar
         </button>
     </div>
 </form>
