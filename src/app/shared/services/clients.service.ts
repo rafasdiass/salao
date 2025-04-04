@@ -14,7 +14,6 @@ import { Client } from '../models/models';
 @Injectable({ providedIn: 'root' })
 export class ClientsService {
   private readonly firestore = inject(Firestore);
-
   private readonly basePath = 'clients';
 
   // === Estado interno ===
@@ -22,13 +21,14 @@ export class ClientsService {
   private readonly _loading = signal<boolean>(false);
   private readonly _error = signal<string | null>(null);
 
-  // === Computed ===
+  // === Signals Computados ===
   readonly clients = computed(() => this._clients());
   readonly loading = computed(() => this._loading());
   readonly error = computed(() => this._error());
   readonly hasClients = computed(() => this._clients().length > 0);
 
   constructor() {
+    // Carrega os clientes automaticamente sempre que o serviço é instanciado
     effect(() => {
       this.loadClients();
     });
@@ -44,7 +44,7 @@ export class ClientsService {
       const data$ = collectionData(ref, {
         idField: 'id',
       }) as unknown as import('rxjs').Observable<Client[]>;
-      const clients = await toSignal(data$, { initialValue: [] })(); // ✅ corrigido
+      const clients = await toSignal(data$, { initialValue: [] })();
       this._clients.set(clients);
     } catch (err) {
       console.error('[ClientsService] Erro ao carregar clientes:', err);
@@ -54,7 +54,7 @@ export class ClientsService {
     }
   }
 
-  /** Cria novo cliente e adiciona localmente */
+  /** Cria novo cliente e atualiza o estado local */
   async create(client: Omit<Client, 'id'>): Promise<void> {
     this._loading.set(true);
     this._error.set(null);
@@ -72,7 +72,7 @@ export class ClientsService {
     }
   }
 
-  /** Exclui cliente do Firestore e localmente */
+  /** Exclui cliente do Firestore e atualiza o estado local */
   async delete(id: string): Promise<void> {
     this._loading.set(true);
     this._error.set(null);
@@ -89,7 +89,7 @@ export class ClientsService {
     }
   }
 
-  /** Atualiza cliente no Firestore e localmente */
+  /** Atualiza cliente no Firestore e atualiza o estado local */
   async update(id: string, updated: Partial<Client>): Promise<void> {
     this._loading.set(true);
     this._error.set(null);
@@ -106,7 +106,7 @@ export class ClientsService {
     }
   }
 
-  /** Atualiza apenas localmente */
+  /** Atualiza o estado local */
   updateLocal(id: string, updated: Partial<Client>): void {
     this._clients.update((list) =>
       list.map((client) =>
@@ -115,8 +115,8 @@ export class ClientsService {
     );
   }
 
-  /** Busca cliente por ID */
+  /** Busca um cliente por ID */
   getById(id: string): Client | undefined {
-    return this._clients().find((c) => c.id === id);
+    return this._clients().find((client) => client.id === id);
   }
 }

@@ -56,6 +56,7 @@ export class AppointmentsFormComponent {
     notes: this.fb.control('', { nonNullable: true }),
   });
 
+  // Computed para obter o serviço selecionado com base no ID do formulário
   selectedService = computed((): Service | null => {
     const serviceId = this.form.controls.serviceId.value;
     return this.services().find((s) => s.id === serviceId) ?? null;
@@ -79,7 +80,6 @@ export class AppointmentsFormComponent {
       status: 'scheduled',
       notes,
       price: service.price,
-      companyIds: service.companyIds,
       paymentStatus: 'pending',
       createdBy: '',
     });

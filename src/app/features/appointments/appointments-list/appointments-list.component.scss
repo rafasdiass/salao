@@ -1,38 +1,52 @@
-.appointments {
-    padding: 1rem;
+// Variáveis de cores e estilos para o tema dark com acentos quentes
+$background-dark: #1c1c1c;
+$input-bg: #2a2a2a;
+$text-light: #f0f0f0;
+$accent-skin: #f1c27d;
+$border-dark: #333;
+$shadow-dark: 0 2px 4px rgba(0, 0, 0, 0.7);
 
-    h2 {
-        margin-bottom: 1rem;
+.p-4 {
+    background-color: $background-dark;
+    border-radius: 8px;
+    color: $text-light;
+}
+
+.group-header {
+    background-color: $input-bg;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    margin-bottom: 0.75rem;
+
+    h6 {
+        margin: 0;
+        color: $accent-skin;
+        font-size: 1.1rem;
     }
+}
 
-    .appointments-list {
-        list-style: none;
-        padding: 0;
+.list-group {
+    .list-group-item {
+        background-color: $background-dark;
+        border: 1px solid $border-dark;
+        border-radius: 4px;
+        margin-bottom: 0.5rem;
+        padding: 0.75rem 1.25rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: background-color 0.3s ease;
 
-        .appointment-item {
-            background: #f3f3f3;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
+        &:hover {
+            background-color: $input-bg;
+        }
 
-            button {
-                align-self: flex-start;
-                background-color: #e74c3c;
-                color: white;
-                border: none;
-                border-radius: 4px;
-                padding: 0.5rem 1rem;
-                cursor: pointer;
-                transition: background-color 0.3s;
+        .fw-bold {
+            color: $accent-skin;
+        }
 
-                &:hover {
-                    background-color: #c0392b;
-                }
-            }
+        i {
+            vertical-align: middle;
         }
     }
 }

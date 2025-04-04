@@ -17,8 +17,29 @@ export class AppointmentsListComponent {
   readonly loading = this.appointmentService.loading;
   readonly error = this.appointmentService.error;
 
-  readonly hasNoAppointments = computed(() => {
-    return !this.loading() && this.appointments().length === 0;
+  // Verifica se não há agendamentos e não está em carregamento
+  readonly hasNoAppointments = computed(
+    () => !this.loading() && this.appointments().length === 0
+  );
+
+  // Agrupa os agendamentos por data (formato yyyy-MM-dd)
+  readonly groupedAppointments = computed(() => {
+    const groups: Record<string, Appointment[]> = {};
+    for (const appointment of this.appointments()) {
+      const dateKey = new Date(appointment.startTime)
+        .toISOString()
+        .split('T')[0];
+      if (!groups[dateKey]) {
+        groups[dateKey] = [];
+      }
+      groups[dateKey].push(appointment);
+    }
+    // Ordena as chaves (datas) de forma ascendente
+    const sortedGroups: Record<string, Appointment[]> = {};
+    Object.keys(groups)
+      .sort()
+      .forEach((key) => (sortedGroups[key] = groups[key]));
+    return sortedGroups;
   });
 
   constructor() {
@@ -35,7 +56,6 @@ export class AppointmentsListComponent {
   async onDelete(id: string): Promise<void> {
     const confirmDelete = confirm('Deseja realmente excluir este agendamento?');
     if (!confirmDelete) return;
-
     await this.appointmentService.delete(id);
   }
 }

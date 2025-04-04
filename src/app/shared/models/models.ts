@@ -1,13 +1,8 @@
 /* ========== INTERFACES BASE ========== */
-
 export interface BaseEntity {
   id?: string;
   createdAt?: Date;
   updatedAt?: Date;
-}
-
-export interface HasCompany {
-  companyIds: string[];
 }
 
 export interface Person {
@@ -28,9 +23,9 @@ export interface Address {
   country?: string;
 }
 
-/* ========== CLIENTE ========== */
-
-export interface Client extends BaseEntity, Person, HasCompany {
+/* ========== CLIENT ========== */
+export interface Client extends BaseEntity, Person {
+  address: Address;
   notes?: string;
   preferences?: {
     preferredServices?: string[];
@@ -46,17 +41,17 @@ export interface Client extends BaseEntity, Person, HasCompany {
   lastVisit?: Date;
 }
 
-/* ========== PROFISSIONAL ========== */
-
-export interface Professional extends BaseEntity, Person, HasCompany {
-  specialties: string[]; // Service IDs
+/* ========== PROFESSIONAL ========== */
+export interface Professional extends BaseEntity, Person {
+  // Caso seja necessário, pode incluir endereço também
+  specialties: string[]; // IDs dos serviços que o profissional realiza
   isActive: boolean;
   commission?: number;
   workingHours?: Record<WeekDay, { start: string; end: string }>;
   daysOff?: Date[];
 }
 
-type WeekDay =
+export type WeekDay =
   | 'monday'
   | 'tuesday'
   | 'wednesday'
@@ -65,26 +60,18 @@ type WeekDay =
   | 'saturday'
   | 'sunday';
 
-/* ========== SERVIÇO ========== */
-
-export interface Service extends BaseEntity, HasCompany {
+/* ========== SERVICE ========== */
+export interface Service extends BaseEntity {
   categoryId: string;
   name: string;
   description?: string;
-  duration: number; // minutos
+  duration: number; // duração em minutos
   price: number;
   isActive: boolean;
   professionalsIds: string[];
 }
 
-export interface ServiceCategory extends BaseEntity, HasCompany {
-  name: string;
-  description?: string;
-  order?: number;
-}
-
-/* ========== AGENDAMENTO ========== */
-
+/* ========== APPOINTMENT ========== */
 export type AppointmentStatus =
   | 'scheduled'
   | 'confirmed'
@@ -95,7 +82,7 @@ export type AppointmentStatus =
 
 export type PaymentStatus = 'pending' | 'paid' | 'partial';
 
-export interface Appointment extends BaseEntity, HasCompany {
+export interface Appointment extends BaseEntity {
   clientId: string;
   professionalId: string;
   serviceId: string;
@@ -110,50 +97,10 @@ export interface Appointment extends BaseEntity, HasCompany {
   createdBy?: string;
 }
 
-/* ========== EMPRESA / SALÃO ========== */
-
-export interface Company extends BaseEntity {
-  ownerId: string;
-  name: string;
-  tradingName?: string;
-  cnpj?: string;
-  address: Address;
-  phone: string;
-  email: string;
-  logoUrl?: string;
-  website?: string;
-  socialMedia?: {
-    instagram?: string;
-    facebook?: string;
-    whatsapp?: string;
-  };
-  settings: SalonSettings;
-  subscription: Subscription;
-  isActive: boolean;
-}
-
-export interface SalonSettings {
-  businessHours: Partial<Record<WeekDay, { open: string; close: string }>>;
-  timeSlotDuration?: number;
-  breakBetweenSlots?: number;
-  daysInAdvance?: number;
-}
-
-export interface Subscription {
-  planId: string;
-  monthlyFee: number;
-  paymentMethod?: string;
-  billingDay: number;
-  status: 'active' | 'pending' | 'canceled' | 'overdue';
-  startsAt: Date;
-  expiresAt: Date;
-  lastPaymentDate?: Date;
-}
-
 /* ========== USUÁRIO ========== */
-
 export interface User extends UserBase {
-  companies: UserCompanyPermissions[];
+  role: 'admin' | 'employee' | 'client';
+  permissions?: string[];
 }
 
 export interface UserBase extends Person, BaseEntity {
@@ -164,26 +111,15 @@ export interface UserBase extends Person, BaseEntity {
   profileImageUrl?: string;
 }
 
-export interface UserCompanyPermissions {
-  companyId: string;
-  isAdmin: boolean;
-  isEmployee: boolean;
-  isOwner: boolean;
-  roles?: string[];
-  permissions?: string[];
-}
-
-/* ========== NOTIFICAÇÃO (opcional por enquanto) ========== */
-
+/* ========== NOTIFICAÇÃO ========== */
 export interface Notification extends BaseEntity {
   userId: string;
-  companyId?: string;
   title: string;
   message: string;
   isRead: boolean;
   type: 'system' | 'appointment' | 'payment' | 'alert';
   relatedEntity?: {
-    type: 'appointment' | 'transaction' | 'client';
+    type: 'appointment' | 'client';
     id: string;
   };
   actionUrl?: string;

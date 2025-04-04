@@ -1,11 +1,19 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ClientsService } from '../../../shared/services/clients.service';
 
 @Component({
   selector: 'app-clients-list',
-  imports: [],
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './clients-list.component.html',
-  styleUrl: './clients-list.component.scss'
+  styleUrls: ['./clients-list.component.scss'],
 })
 export class ClientsListComponent {
+  private readonly clientsService = inject(ClientsService);
 
+  // Signals computados a partir do ClientsService
+  clients = this.clientsService.clients;
+  loading = this.clientsService.loading;
+  error = this.clientsService.error;
 }

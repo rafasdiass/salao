@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
+import { ClientsFormComponent } from './clients-form/clients-form.component';
+import { ClientsListComponent } from './clients-list/clients-list.component';
 
 @Component({
   selector: 'app-clients',
-  imports: [],
+  standalone: true,
+  imports: [ClientsFormComponent, ClientsListComponent],
   templateUrl: './clients.component.html',
-  styleUrl: './clients.component.scss'
+  styleUrls: ['./clients.component.scss'],
 })
-export class ClientsComponent {
-
-}
+export class ClientsComponent {}

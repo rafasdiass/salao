@@ -1,43 +1,73 @@
-<form [formGroup]="form" (ngSubmit)="submit()" class="p-4 border rounded shadow-sm bg-light">
+<form [formGroup]="form" (ngSubmit)="submit()" class="clients-form p-4 border rounded shadow-sm">
     <h5 class="mb-4">
-        <i class="bi bi-person-vcard me-2"></i> Cadastro de Cliente
+        <i class="bi bi-person-vcard me-2"></i>
+        Cadastro de Cliente
     </h5>
 
+    <!-- Dados do Cliente -->
     <div class="mb-3">
-        <label for="name" class="form-label">
-            <i class="bi bi-person-fill me-1"></i> Nome
-        </label>
+        <label for="name" class="form-label">Nome</label>
         <input type="text" class="form-control" id="name" formControlName="name" />
     </div>
 
     <div class="mb-3">
-        <label for="phone" class="form-label">
-            <i class="bi bi-telephone-fill me-1"></i> Telefone
-        </label>
+        <label for="phone" class="form-label">Telefone</label>
         <input type="tel" class="form-control" id="phone" formControlName="phone" />
     </div>
 
     <div class="mb-3">
-        <label for="email" class="form-label">
-            <i class="bi bi-envelope-fill me-1"></i> E-mail
-        </label>
+        <label for="email" class="form-label">E-mail</label>
         <input type="email" class="form-control" id="email" formControlName="email" />
     </div>
 
     <div class="mb-3">
-        <label for="birthDate" class="form-label">
-            <i class="bi bi-calendar-event me-1"></i> Data de Nascimento
-        </label>
+        <label for="birthDate" class="form-label">Data de Nascimento</label>
         <input type="date" class="form-control" id="birthDate" formControlName="birthDate" />
     </div>
 
     <div class="mb-3">
-        <label for="notes" class="form-label">
-            <i class="bi bi-pencil-fill me-1"></i> Observações
-        </label>
+        <label for="notes" class="form-label">Observações</label>
         <textarea class="form-control" id="notes" rows="3" formControlName="notes"
             placeholder="Preferências, restrições, etc."></textarea>
     </div>
+
+    <!-- Endereço -->
+    <fieldset formGroupName="address" class="border p-3 mb-3">
+        <legend class="w-auto px-2">Endereço</legend>
+
+        <div class="mb-3">
+            <label for="street" class="form-label">Rua</label>
+            <input type="text" class="form-control" id="street" formControlName="street" />
+        </div>
+        <div class="mb-3">
+            <label for="number" class="form-label">Número</label>
+            <input type="text" class="form-control" id="number" formControlName="number" />
+        </div>
+        <div class="mb-3">
+            <label for="complement" class="form-label">Complemento</label>
+            <input type="text" class="form-control" id="complement" formControlName="complement" />
+        </div>
+        <div class="mb-3">
+            <label for="neighborhood" class="form-label">Bairro</label>
+            <input type="text" class="form-control" id="neighborhood" formControlName="neighborhood" />
+        </div>
+        <div class="mb-3">
+            <label for="city" class="form-label">Cidade</label>
+            <input type="text" class="form-control" id="city" formControlName="city" />
+        </div>
+        <div class="mb-3">
+            <label for="state" class="form-label">Estado</label>
+            <input type="text" class="form-control" id="state" formControlName="state" />
+        </div>
+        <div class="mb-3">
+            <label for="zipCode" class="form-label">CEP</label>
+            <input type="text" class="form-control" id="zipCode" formControlName="zipCode" />
+        </div>
+        <div class="mb-3">
+            <label for="country" class="form-label">País</label>
+            <input type="text" class="form-control" id="country" formControlName="country" />
+        </div>
+    </fieldset>
 
     <div class="d-flex justify-content-end">
         <button type="submit" class="btn btn-primary" [disabled]="form.invalid">
