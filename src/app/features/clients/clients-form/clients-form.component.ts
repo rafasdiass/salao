@@ -40,7 +40,13 @@ export class ClientsFormComponent {
       nonNullable: true,
       validators: [Validators.required],
     }),
-    phone: new FormControl('', { nonNullable: true }),
+    phone: new FormControl('', {
+      nonNullable: true,
+      validators: [
+        Validators.required,
+        Validators.pattern(/^\(?\d{2}\)?\s?\d{4,5}-?\d{4}$/), // (99) 99999-9999
+      ],
+    }),
     email: new FormControl('', {
       nonNullable: true,
       validators: [Validators.required, Validators.email],
@@ -49,7 +55,9 @@ export class ClientsFormComponent {
       nonNullable: true,
       validators: [Validators.required],
     }),
-    notes: new FormControl('', { nonNullable: true }),
+    notes: new FormControl('', {
+      nonNullable: true,
+    }),
     address: new FormGroup({
       street: new FormControl('', {
         nonNullable: true,
@@ -59,7 +67,9 @@ export class ClientsFormComponent {
         nonNullable: true,
         validators: [Validators.required],
       }),
-      complement: new FormControl('', { nonNullable: true }),
+      complement: new FormControl('', {
+        nonNullable: true,
+      }),
       neighborhood: new FormControl('', {
         nonNullable: true,
         validators: [Validators.required],
@@ -76,47 +86,56 @@ export class ClientsFormComponent {
         nonNullable: true,
         validators: [Validators.required],
       }),
-      country: new FormControl('Brazil', { nonNullable: true }),
+      country: new FormControl('Brasil', {
+        nonNullable: true,
+        validators: [Validators.required],
+      }),
     }),
   });
 
   async submit(): Promise<void> {
-    if (this.form.invalid) return;
+    if (this.form.invalid) {
+      alert('Preencha todos os campos obrigatórios corretamente.');
+      return;
+    }
 
     const raw = this.form.getRawValue();
-
     const birthDate = this.toValidDate(raw.birthDate);
+
     if (!birthDate) {
-      alert('Data de nascimento inválida.');
+      alert('Data de nascimento inválida. Corrija e tente novamente.');
       return;
     }
 
     const client: Omit<Client, 'id'> = {
-      name: raw.name,
-      phone: raw.phone,
-      email: raw.email,
+      name: raw.name?.trim(),
+      phone: raw.phone?.trim(),
+      email: raw.email?.trim(),
       birthDate,
-      notes: raw.notes,
+      notes: raw.notes?.trim(),
       address: {
-        street: raw.address.street,
-        number: raw.address.number,
-        complement: raw.address.complement,
-        neighborhood: raw.address.neighborhood,
-        city: raw.address.city,
-        state: raw.address.state,
-        zipCode: raw.address.zipCode,
-        country: raw.address.country,
+        street: raw.address.street?.trim(),
+        number: raw.address.number?.trim(),
+        complement: raw.address.complement?.trim(),
+        neighborhood: raw.address.neighborhood?.trim(),
+        city: raw.address.city?.trim(),
+        state: raw.address.state?.trim(),
+        zipCode: raw.address.zipCode?.trim(),
+        country: raw.address.country?.trim(),
       },
     };
 
-    await this.clientsService.create(client);
-    this.form.reset();
+    try {
+      await this.clientsService.create(client);
+      this.form.reset();
+    } catch (error) {
+      console.error('[ClientsForm] Erro ao salvar cliente:', error);
+      alert('Erro ao salvar cliente. Tente novamente mais tarde.');
+    }
   }
 
-  /**
-   * Converte uma string de data em objeto Date válido ou retorna undefined.
-   */
   private toValidDate(input: string): Date | undefined {
+    if (!input || typeof input !== 'string') return undefined;
     const date = new Date(input);
     return isNaN(date.getTime()) ? undefined : date;
   }
