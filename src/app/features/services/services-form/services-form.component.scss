@@ -1,0 +1,25 @@
+.form-grid {
+    display: grid;
+    gap: 1rem;
+    max-width: 600px;
+    margin: 0 auto;
+
+    input,
+    textarea,
+    button {
+        padding: 0.5rem;
+        font-size: 1rem;
+    }
+
+    button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+
+    button:disabled {
+        background-color: #999;
+        cursor: not-allowed;
+    }
+}

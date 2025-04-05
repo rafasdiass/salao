@@ -1,11 +1,13 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ServicesFormComponent } from './services-form/services-form.component';
+import { ServicesListComponent } from './services-list/services-list.component';
 
 @Component({
   selector: 'app-services',
-  imports: [],
+  standalone: true,
+  imports: [CommonModule, ServicesFormComponent, ServicesListComponent],
   templateUrl: './services.component.html',
-  styleUrl: './services.component.scss'
+  styleUrls: ['./services.component.scss'],
 })
-export class ServicesComponent {
-
-}
+export class ServicesComponent {}

@@ -84,17 +84,11 @@ export class ServicesService {
     }
   }
 
-  /** Atualiza localmente sem persistir */
-  updateLocal(id: string, updated: Partial<Service>): void {
-    this._services.update((list) =>
-      list.map((service) =>
-        service.id === id ? { ...service, ...updated } : service
-      )
-    );
-  }
-
   /** Atualiza um serviço no Firestore e localmente */
-  async update(id: string, updated: Partial<Service>): Promise<void> {
+  async update(
+    id: string,
+    updated: Partial<Omit<Service, 'id'>>
+  ): Promise<void> {
     this._loading.set(true);
     this._error.set(null);
 
@@ -108,6 +102,15 @@ export class ServicesService {
     } finally {
       this._loading.set(false);
     }
+  }
+
+  /** Atualiza localmente sem persistir */
+  updateLocal(id: string, updated: Partial<Omit<Service, 'id'>>): void {
+    this._services.update((list) =>
+      list.map((service) =>
+        service.id === id ? { ...service, ...updated } : service
+      )
+    );
   }
 
   /** Busca um serviço por ID */

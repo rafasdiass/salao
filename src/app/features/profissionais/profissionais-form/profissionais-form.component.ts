@@ -91,30 +91,31 @@ export class ProfissionaisFormComponent {
       country,
     } = this.form.getRawValue();
 
-    const professional: EmployeeUser = {
-      role: 'employee',
-      name,
-      email,
-      password,
-      phone,
-      birthDate: new Date(birthDate),
-      specialties,
-      commission,
-      isActive,
-      profileImageUrl: profileImageUrl || undefined,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      address: {
-        street,
-        number,
-        complement,
-        neighborhood,
-        city,
-        state,
-        zipCode,
-        country,
-      },
-    };
+   const professional: Omit<EmployeeUser, 'id'> = {
+     role: 'employee',
+     name,
+     email,
+     password,
+     phone,
+     birthDate: new Date(birthDate),
+     specialties,
+     commission,
+     isActive,
+     profileImageUrl: profileImageUrl || undefined,
+     createdAt: new Date(),
+     updatedAt: new Date(),
+     address: {
+       street,
+       number,
+       complement,
+       neighborhood,
+       city,
+       state,
+       zipCode,
+       country,
+     },
+   };
+
 
     await this.professionalService.create(professional);
     this.form.reset();

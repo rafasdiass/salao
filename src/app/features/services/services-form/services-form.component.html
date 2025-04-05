@@ -1,1 +1,65 @@
-<p>services-form works!</p>
+<form (ngSubmit)="save()" class="p-4 border rounded shadow-sm bg-white">
+
+    <div class="mb-3">
+        <label for="categoryId" class="form-label">Categoria</label>
+        <select id="categoryId" class="form-select" [(ngModel)]="categoryId" name="categoryId"
+            [ngClass]="{ 'is-invalid': isInvalid(categoryId) }" required>
+            <option value="" disabled selected>Selecione uma categoria</option>
+            <option *ngFor="let cat of categories()" [value]="cat.id">{{ cat.name }}</option>
+        </select>
+        <div class="invalid-feedback">Categoria é obrigatória.</div>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Nome do Serviço</label>
+        <input type="text" class="form-control" [(ngModel)]="name" name="name"
+            [ngClass]="{ 'is-invalid': isInvalid(name) }" placeholder="Ex: Limpeza de Pele" />
+        <div class="invalid-feedback">Nome é obrigatório.</div>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Descrição (opcional)</label>
+        <textarea class="form-control" [(ngModel)]="description" name="description" rows="3"
+            placeholder="Detalhes do serviço..."></textarea>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col">
+            <label class="form-label">Duração (min)</label>
+            <input type="number" class="form-control" [(ngModel)]="duration" name="duration"
+                [ngClass]="{ 'is-invalid': isInvalid(duration) }" placeholder="Ex: 60" />
+            <div class="invalid-feedback">Duração é obrigatória.</div>
+        </div>
+        <div class="col">
+            <label class="form-label">Preço (R$)</label>
+            <input type="number" class="form-control" [(ngModel)]="price" name="price"
+                [ngClass]="{ 'is-invalid': isInvalid(price) }" placeholder="Ex: 200" />
+            <div class="invalid-feedback">Preço é obrigatório.</div>
+        </div>
+    </div>
+
+    <div class="mb-3 form-check form-switch">
+        <input class="form-check-input" type="checkbox" [(ngModel)]="isActive" name="isActive" id="isActive" />
+        <label class="form-check-label" for="isActive">
+            <i class="bi bi-check-circle me-1"></i>
+            Serviço Ativo
+        </label>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Profissionais Responsáveis</label>
+        <div *ngIf="professionals().length === 0">Nenhum profissional ativo encontrado.</div>
+        <div *ngFor="let prof of professionals()" class="form-check">
+            <input class="form-check-input" type="checkbox" [id]="prof.id"
+                [checked]="selectedProfessionals.includes(prof.id)" (change)="toggleProfessional(prof.id)" />
+            <label class="form-check-label" [for]="prof.id">
+                <i class="bi bi-person-circle me-1"></i> {{ prof.name }}
+            </label>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary w-100" [disabled]="saving()">
+        <i class="bi bi-save me-1"></i>
+        {{ saving() ? 'Salvando...' : 'Salvar Serviço' }}
+    </button>
+</form>

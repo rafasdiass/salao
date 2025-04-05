@@ -121,6 +121,7 @@ export interface ClientUser extends UserBase {
 
 /** Usuário funcionário */
 export interface EmployeeUser extends UserBase {
+  id: string;
   role: 'employee';
   isActive: boolean;
   specialties: string[];
