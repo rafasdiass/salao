@@ -8,16 +8,23 @@ import {
 import { CommonModule } from '@angular/common';
 import { ProfessionalService } from '../../../shared/services/profissionais.service';
 import { EmployeeUser } from '../../../shared/models/models';
+import { NgxMaskDirective, NgxMaskPipe, provideNgxMask } from 'ngx-mask';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-profissionais-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, NgxMaskDirective],
+  providers: [provideNgxMask()],
   templateUrl: './profissionais-form.component.html',
   styleUrls: ['./profissionais-form.component.scss'],
 })
 export class ProfissionaisFormComponent {
   private readonly professionalService = inject(ProfessionalService);
+  private readonly sanitizer = inject(DomSanitizer);
+
+  imagePreviewUrl: string | null = null;
+  selectedImageFile: File | null = null;
 
   form: FormGroup<{
     name: FormControl<string>;
@@ -25,7 +32,6 @@ export class ProfissionaisFormComponent {
     password: FormControl<string>;
     phone: FormControl<string>;
     birthDate: FormControl<string>;
-    specialties: FormControl<string[]>;
     commission: FormControl<number>;
     isActive: FormControl<boolean>;
     profileImageUrl: FormControl<string>;
@@ -52,12 +58,11 @@ export class ProfissionaisFormComponent {
     }),
     phone: new FormControl('', { nonNullable: true }),
     birthDate: new FormControl('', { nonNullable: true }),
-    specialties: new FormControl<string[]>([], { nonNullable: true }),
     commission: new FormControl(0, { nonNullable: true }),
     isActive: new FormControl(true, { nonNullable: true }),
-    profileImageUrl: new FormControl('', { nonNullable: true }),
-
-    // Endereço
+    profileImageUrl: new FormControl('', {
+      nonNullable: true,
+    }),
     street: new FormControl('', { nonNullable: true }),
     number: new FormControl('', { nonNullable: true }),
     complement: new FormControl('', { nonNullable: true }),
@@ -71,62 +76,56 @@ export class ProfissionaisFormComponent {
   async submit(): Promise<void> {
     if (this.form.invalid) return;
 
-    const {
-      name,
-      email,
-      password,
-      phone,
-      birthDate,
-      specialties,
-      commission,
-      isActive,
-      profileImageUrl,
-      street,
-      number,
-      complement,
-      neighborhood,
-      city,
-      state,
-      zipCode,
-      country,
-    } = this.form.getRawValue();
+    const values = this.form.getRawValue();
 
-   const professional: Omit<EmployeeUser, 'id'> = {
-     role: 'employee',
-     name,
-     email,
-     password,
-     phone,
-     birthDate: new Date(birthDate),
-     specialties,
-     commission,
-     isActive,
-     profileImageUrl: profileImageUrl || undefined,
-     createdAt: new Date(),
-     updatedAt: new Date(),
-     address: {
-       street,
-       number,
-       complement,
-       neighborhood,
-       city,
-       state,
-       zipCode,
-       country,
-     },
-   };
+    const professional: Omit<EmployeeUser, 'id'> = {
+      role: 'employee',
+      name: values.name,
+      email: values.email,
+      password: values.password,
+      phone: values.phone,
+      birthDate: new Date(values.birthDate),
+      commission: values.commission,
+      isActive: values.isActive,
+      profileImageUrl: values.profileImageUrl || '',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      specialties: [],
+      address: {
+        street: values.street,
+        number: values.number,
+        complement: values.complement,
+        neighborhood: values.neighborhood,
+        city: values.city,
+        state: values.state,
+        zipCode: values.zipCode,
+        country: values.country,
+      },
+    };
 
-
-    await this.professionalService.create(professional);
-    this.form.reset();
+    await this.professionalService.create(professional, this.selectedImageFile);
+    this.resetForm();
   }
 
-  onSpecialtiesChange(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const values = input.value
-      .split(',')
-      .map((s) => s.trim())
-      .filter((s) => s !== '');
-    this.form.controls.specialties.setValue(values);
+  resetForm(): void {
+    this.form.reset();
+    this.form.controls.country.setValue('Brasil');
+    this.imagePreviewUrl = null;
+    this.selectedImageFile = null;
+  }
+
+  onImageSelect(event: Event): void {
+    const fileInput = event.target as HTMLInputElement;
+    if (fileInput.files && fileInput.files.length > 0) {
+      this.selectedImageFile = fileInput.files[0];
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.imagePreviewUrl = reader.result as string;
+      };
+      reader.readAsDataURL(this.selectedImageFile);
+
+      this.form.controls.profileImageUrl.setValue('');
+    }
   }
 }
