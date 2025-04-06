@@ -1,25 +1,181 @@
-.form-grid {
-    display: grid;
-    gap: 1rem;
-    max-width: 600px;
-    margin: 0 auto;
+@use 'sass:color';
+
+$form-bg: #1b1b1b; // fundo escuro com leve tom grafite
+$text-color: #f0f0f0; // branco quebrado suave
+$input-bg: #2a2a2a; // campos escuros
+$input-border: #444;
+$highlight-color: #d4a373; // dourado/creme
+$accent-color: #b5838d; // rosado pele
+$muted-color: #aaa;
+
+form.service-form {
+    background-color: $form-bg;
+    color: $text-color;
+    padding: 1.5rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem; // espaçamento entre blocos de campo
+    border-radius: 0;
+
+    &:hover {
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.7);
+        transform: translateY(-2px);
+    }
+
+    label {
+        font-weight: 500;
+        color: $highlight-color;
+        margin-bottom: 0.5rem;
+    }
 
     input,
     textarea,
-    button {
-        padding: 0.5rem;
-        font-size: 1rem;
+    select {
+        background-color: $input-bg;
+        color: $text-color;
+        border: 1px solid $input-border;
+        border-radius: 0;
+        padding: 0.75rem 1rem;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+        &::placeholder {
+            color: $muted-color;
+        }
+
+        &:focus {
+            border-color: $accent-color;
+            box-shadow: 0 0 0 0.2rem rgba(181, 131, 141, 0.25);
+        }
     }
 
-    button {
-        background-color: #007bff;
-        color: white;
-        border: none;
-        cursor: pointer;
+    textarea {
+        resize: none;
     }
 
-    button:disabled {
-        background-color: #999;
-        cursor: not-allowed;
+    .form-check-input {
+        background-color: $input-bg;
+        border-color: $input-border;
+        border-radius: 0;
+
+        &:checked {
+            background-color: $accent-color;
+            border-color: $accent-color;
+        }
     }
+
+    .form-check-label {
+        color: $text-color;
+
+        i {
+            color: $accent-color;
+        }
+    }
+
+    .input-group-text {
+        background-color: $input-bg;
+        border: 1px solid $input-border;
+        color: $accent-color;
+        border-radius: 0;
+    }
+
+    .invalid-feedback {
+        color: color.adjust($accent-color, $lightness: 10%);
+        margin-top: 0.25rem;
+    }
+
+    .btn-primary {
+        background-color: $highlight-color;
+        border-color: color.adjust($highlight-color, $lightness: -10%);
+        color: $form-bg;
+        font-weight: 600;
+        border-radius: 0;
+        padding: 0.75rem 1rem;
+        transition: background-color 0.2s ease, transform 0.2s ease;
+
+        &:hover {
+            background-color: color.adjust($highlight-color, $lightness: -10%);
+            transform: scale(1.01);
+        }
+
+        &:disabled {
+            background-color: $input-border;
+            border-color: $input-border;
+            color: $muted-color;
+            cursor: not-allowed;
+        }
+    }
+
+    .text-muted {
+        color: $muted-color;
+
+        i {
+            color: $accent-color;
+        }
+    }
+
+    .form-check {
+        padding-left: 1.75em;
+
+        .form-check-input {
+            margin-left: -1.75em;
+        }
+    }
+
+    .row {
+        margin-left: 0;
+        margin-right: 0;
+
+        .col,
+        .col-md-6,
+        .col-md-4,
+        .col-lg-3 {
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+        }
+    }
+
+    // Ajustes extras para evitar "aperto"
+    .mb-3,
+    .mb-4 {
+        margin-bottom: 1.75rem !important;
+    }
+        // Estilo para o switch de "Serviço Ativo"
+        .form-check.form-switch {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+    
+            .form-check-input {
+                width: 3rem;
+                height: 1.5rem;
+                background-color: #555;
+                border-color: #777;
+                border-radius: 1.5rem;
+                position: relative;
+                transition: background-color 0.3s ease;
+    
+                &:checked {
+                    background-color: #9dc08b; // verde oliva claro
+                    border-color: #9dc08b;
+                }
+    
+                &:focus {
+                    box-shadow: 0 0 0 0.2rem rgba(157, 192, 139, 0.25);
+                }
+            }
+    
+            .form-check-label {
+                color: $text-color;
+                font-weight: 500;
+                display: flex;
+                align-items: center;
+                gap: 0.4rem;
+    
+                i {
+                    color: #9dc08b; // mesmo verde oliva
+                }
+            }
+        }
 }

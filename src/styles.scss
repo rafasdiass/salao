@@ -1,1 +1,108 @@
-/* You can add global styles to this file, and also import other style files */
+/* ======== FONTES ======== */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+
+/* ======== BOOTSTRAP E ÍCONES ======== */
+@import "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css";
+@import "https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css";
+
+/* ======== RESET E TEMA GLOBAL ======== */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+    background-color: #121212; // Fundo escuro global
+    color: #f0f0f0;
+    scroll-behavior: smooth;
+}
+
+/* Container principal para páginas */
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Links e elementos interativos */
+a {
+    color: #0d6efd;
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+/* Botões customizados com transições suaves */
+button,
+.btn {
+    transition: all 0.2s ease-in-out;
+}
+
+/* Scrollbar customizada para visual refinado */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1e1e1e;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #555;
+    border-radius: 6px;
+    border: 2px solid #1e1e1e;
+}
+
+/* Títulos com destaque elegante */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-weight: 500;
+    color: #ffc107; // Dourado elegante para títulos
+}
+
+/* Cards escuros com borda sutil */
+.card {
+    background-color: #1e1e1e;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Formulários base com bordas suaves */
+input,
+textarea,
+select {
+    background-color: #2a2a2a;
+    color: #f0f0f0;
+    border: 1px solid #444;
+
+    &::placeholder {
+        color: #aaa;
+    }
+}
+
+/* Formulário focado */
+input:focus,
+textarea:focus,
+select:focus {
+    border-color: #0d6efd;
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+/* Alerts no tema dark */
+.alert-info {
+    background-color: #222;
+    color: #ddd;
+    border-color: #444;
+}

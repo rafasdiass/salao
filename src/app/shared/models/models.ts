@@ -61,7 +61,6 @@ export type WeekDay =
 
 /* ========== SERVICE ========== */
 export interface Service extends BaseEntity {
-  categoryId: string;
   name: string;
   description?: string;
   duration: number; // duração em minutos
@@ -69,6 +68,7 @@ export interface Service extends BaseEntity {
   isActive: boolean;
   professionalsIds: string[];
 }
+
 
 /* ========== APPOINTMENT ========== */
 export type AppointmentStatus =

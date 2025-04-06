@@ -1,4 +1,4 @@
-import { Component, inject, signal, effect } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
@@ -10,7 +10,8 @@ import {
 } from '@angular/fire/firestore';
 
 import { ServicesService } from '../../../shared/services/services.service';
-import { EmployeeUser,Service } from '../../../shared/models/models';
+import { EmployeeUser, Service } from '../../../shared/models/models';
+
 @Component({
   selector: 'app-services-form',
   standalone: true,
@@ -20,7 +21,6 @@ import { EmployeeUser,Service } from '../../../shared/models/models';
 })
 export class ServicesFormComponent {
   // Form data
-  categoryId = '';
   name = '';
   description = '';
   duration: number | null = null;
@@ -32,7 +32,7 @@ export class ServicesFormComponent {
   submitted = false;
 
   // Data from Firestore
-  categories = signal<{ id: string; name: string }[]>([]);
+  services = signal<Service[]>([]);
   professionals = signal<EmployeeUser[]>([]);
 
   // Firestore
@@ -40,14 +40,14 @@ export class ServicesFormComponent {
   private servicesService = inject(ServicesService);
 
   constructor() {
-    this.loadCategories();
+    this.loadServices();
     this.loadProfessionals();
   }
 
-  private async loadCategories() {
-    const ref = collection(this.firestore, 'categories');
+  private async loadServices() {
+    const ref = collection(this.firestore, 'services');
     const data = await collectionData(ref, { idField: 'id' }).toPromise();
-    this.categories.set(data as { id: string; name: string }[]);
+    this.services.set(data as Service[]);
   }
 
   private async loadProfessionals() {
@@ -72,16 +72,9 @@ export class ServicesFormComponent {
   async save(): Promise<void> {
     this.submitted = true;
 
-    if (
-      !this.categoryId ||
-      !this.name ||
-      this.duration == null ||
-      this.price == null
-    )
-      return;
+    if (!this.name || this.duration == null || this.price == null) return;
 
-    const service: Omit<Service, 'id'> = {
-      categoryId: this.categoryId,
+    const service: Omit<Service, 'id' | 'categoryId'> = {
       name: this.name.trim(),
       description: this.description?.trim(),
       duration: this.duration,
@@ -98,7 +91,6 @@ export class ServicesFormComponent {
   }
 
   resetForm(): void {
-    this.categoryId = '';
     this.name = '';
     this.description = '';
     this.duration = null;
