@@ -1,7 +1,6 @@
 <form (ngSubmit)="save()" class="service-form">
-
     <!-- Nome -->
-    <div class="mb-3">
+    <div class="mb-4">
         <label class="form-label">Nome do Serviço</label>
         <input type="text" class="form-control" [(ngModel)]="name" name="name" placeholder="Ex: Limpeza de Pele"
             [ngClass]="{ 'is-invalid': isInvalid(name) }" />
@@ -9,14 +8,14 @@
     </div>
 
     <!-- Descrição -->
-    <div class="mb-3">
+    <div class="mb-4">
         <label class="form-label">Descrição (opcional)</label>
         <textarea class="form-control" [(ngModel)]="description" name="description" rows="3"
             placeholder="Detalhes do serviço..."></textarea>
     </div>
 
     <!-- Duração e Preço -->
-    <div class="row mb-4 g-3">
+    <div class="row mb-4 g-4">
         <div class="col-md-6">
             <label class="form-label">Duração (min)</label>
             <div class="input-group">
@@ -42,7 +41,7 @@
         </div>
     </div>
 
-    <!-- Ativo -->
+    <!-- Switch Serviço Ativo -->
     <div class="form-check form-switch mb-4">
         <input class="form-check-input" type="checkbox" [(ngModel)]="isActive" name="isActive" id="isActive" />
         <label class="form-check-label" for="isActive">
@@ -51,25 +50,30 @@
         </label>
     </div>
 
-    <!-- Profissionais -->
-    <div class="mb-4">
-        <label class="form-label">Profissionais Responsáveis</label>
-        <div *ngIf="professionals().length === 0" class="text-muted">
-            <i class="bi bi-info-circle me-1"></i>
-            Nenhum profissional ativo encontrado.
-        </div>
-        <div class="row">
-            <div *ngFor="let prof of professionals()" class="col-6 col-md-4 col-lg-3 mb-2">
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" [id]="prof.id"
-                        [checked]="selectedProfessionals.includes(prof.id)" (change)="toggleProfessional(prof.id)" />
-                    <label class="form-check-label" [for]="prof.id">
-                        <i class="bi bi-person-circle me-1"></i> {{ prof.name }}
-                    </label>
-                </div>
+<!-- Profissionais Responsáveis -->
+<div class="mb-4">
+    <label class="form-label">Profissionais Responsáveis</label>
+
+    <div *ngIf="professionals().length === 0" class="text-warning small d-flex align-items-center gap-1 mb-2">
+        <i class="bi bi-info-circle-fill"></i>
+        Nenhum profissional ativo encontrado.
+    </div>
+
+    <div class="row">
+        <div *ngFor="let prof of professionals()" class="col-6 col-md-4 col-lg-3 mb-3">
+            <div class="form-check professional-card"
+                [class.professional-selected]="selectedProfessionals.includes(prof.id)">
+                <input class="form-check-input d-none" type="checkbox" [id]="prof.id"
+                    [checked]="selectedProfessionals.includes(prof.id)" (change)="toggleProfessional(prof.id)" />
+                <label class="form-check-label" [for]="prof.id">
+                    <i class="bi bi-person-circle me-1 text-accent"></i>
+                    <span>{{ prof.name }}</span>
+                </label>
             </div>
         </div>
     </div>
+</div>
+
 
     <!-- Botão -->
     <button type="submit" class="btn btn-primary w-100 d-flex justify-content-center align-items-center gap-2"

@@ -1,12 +1,13 @@
 @use 'sass:color';
 
-$form-bg: #1b1b1b; // fundo escuro com leve tom grafite
-$text-color: #f0f0f0; // branco quebrado suave
-$input-bg: #2a2a2a; // campos escuros
+$form-bg: #1b1b1b;
+$text-color: #f0f0f0;
+$input-bg: #2a2a2a;
 $input-border: #444;
-$highlight-color: #d4a373; // dourado/creme
-$accent-color: #b5838d; // rosado pele
+$highlight-color: #d4a373;
+$accent-color: #b5838d;
 $muted-color: #aaa;
+$active-green: #9dc08b;
 
 form.service-form {
     background-color: $form-bg;
@@ -16,7 +17,7 @@ form.service-form {
     transition: box-shadow 0.3s ease, transform 0.3s ease;
     display: flex;
     flex-direction: column;
-    gap: 1.75rem; // espaçamento entre blocos de campo
+    gap: 1.75rem;
     border-radius: 0;
 
     &:hover {
@@ -108,7 +109,7 @@ form.service-form {
     }
 
     .text-muted {
-        color: $muted-color;
+        color: $highlight-color;
 
         i {
             color: $accent-color;
@@ -120,6 +121,16 @@ form.service-form {
 
         .form-check-input {
             margin-left: -1.75em;
+        }
+
+        .form-check-label {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+
+            .text-light {
+                color: $text-color;
+            }
         }
     }
 
@@ -136,46 +147,82 @@ form.service-form {
         }
     }
 
-    // Ajustes extras para evitar "aperto"
     .mb-3,
     .mb-4 {
         margin-bottom: 1.75rem !important;
     }
-        // Estilo para o switch de "Serviço Ativo"
-        .form-check.form-switch {
+
+    // Switch “Serviço Ativo”
+    .form-check.form-switch {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        .form-check-input {
+            width: 3rem;
+            height: 1.5rem;
+            background-color: #555;
+            border-color: #777;
+            border-radius: 1.5rem;
+            position: relative;
+            transition: background-color 0.3s ease;
+
+            &:checked {
+                background-color: $active-green;
+                border-color: $active-green;
+            }
+
+            &:focus {
+                box-shadow: 0 0 0 0.2rem rgba(157, 192, 139, 0.25);
+            }
+        }
+
+        .form-check-label {
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+
+            i {
+                color: $active-green;
+            }
+        }
+    }
+
+    .text-accent {
+        color: $accent-color !important;
+    }
+
+    // === Cartões dos profissionais ===
+    .professional-card {
+        background-color: rgba(255, 255, 255, 0.02);
+        border: 1px solid $input-border;
+        border-radius: 0;
+        padding: 0.75rem 1rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+            border-color: $highlight-color;
+            background-color: rgba(212, 163, 115, 0.08);
+        }
+
+        label {
             display: flex;
             align-items: center;
             gap: 0.5rem;
-    
-            .form-check-input {
-                width: 3rem;
-                height: 1.5rem;
-                background-color: #555;
-                border-color: #777;
-                border-radius: 1.5rem;
-                position: relative;
-                transition: background-color 0.3s ease;
-    
-                &:checked {
-                    background-color: #9dc08b; // verde oliva claro
-                    border-color: #9dc08b;
-                }
-    
-                &:focus {
-                    box-shadow: 0 0 0 0.2rem rgba(157, 192, 139, 0.25);
-                }
-            }
-    
-            .form-check-label {
-                color: $text-color;
-                font-weight: 500;
-                display: flex;
-                align-items: center;
-                gap: 0.4rem;
-    
-                i {
-                    color: #9dc08b; // mesmo verde oliva
-                }
-            }
+            color: $text-color;
+            margin: 0;
         }
+
+        i {
+            font-size: 1.2rem;
+            color: $accent-color;
+        }
+
+        &.professional-selected {
+            border-color: $accent-color;
+            background-color: rgba(181, 131, 141, 0.1);
+        }
+    }
 }

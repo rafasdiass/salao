@@ -1,15 +1,15 @@
-import { Component, inject, signal } from '@angular/core';
+import {
+  Component,
+  inject,
+  signal,
+  computed,
+  Injector,
+  runInInjectionContext,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import {
-  Firestore,
-  collection,
-  collectionData,
-  query,
-  where,
-} from '@angular/fire/firestore';
-
 import { ServicesService } from '../../../shared/services/services.service';
+import { ProfessionalService } from '../../../shared/services/profissionais.service';
 import { EmployeeUser, Service } from '../../../shared/models/models';
 
 @Component({
@@ -20,7 +20,6 @@ import { EmployeeUser, Service } from '../../../shared/models/models';
   styleUrls: ['./services-form.component.scss'],
 })
 export class ServicesFormComponent {
-  // Form data
   name = '';
   description = '';
   duration: number | null = null;
@@ -31,42 +30,58 @@ export class ServicesFormComponent {
   saving = signal(false);
   submitted = false;
 
-  // Data from Firestore
   services = signal<Service[]>([]);
   professionals = signal<EmployeeUser[]>([]);
 
-  // Firestore
-  private firestore = inject(Firestore);
-  private servicesService = inject(ServicesService);
+  private readonly injector = inject(Injector);
+  private readonly servicesService = inject(ServicesService);
+  private readonly professionalService = inject(ProfessionalService);
 
   constructor() {
     this.loadServices();
     this.loadProfessionals();
   }
 
-  private async loadServices() {
-    const ref = collection(this.firestore, 'services');
-    const data = await collectionData(ref, { idField: 'id' }).toPromise();
-    this.services.set(data as Service[]);
+  private async loadServices(): Promise<void> {
+    runInInjectionContext(this.injector, () => {
+      const loaded = this.servicesService.services();
+      this.services.set(loaded);
+    });
   }
 
-  private async loadProfessionals() {
-    const ref = collection(this.firestore, 'users');
-    const q = query(
-      ref,
-      where('role', '==', 'employee'),
-      where('isActive', '==', true)
-    );
-    const data = await collectionData(q, { idField: 'id' }).toPromise();
-    this.professionals.set(data as EmployeeUser[]);
+  private async loadProfessionals(): Promise<void> {
+    await runInInjectionContext(this.injector, async () => {
+      await this.professionalService.load();
+      const onlyActive = this.professionalService
+        .professionals()
+        .filter((p) => p.isActive);
+      this.professionals.set(onlyActive);
+    });
   }
 
   toggleProfessional(id: string): void {
-    this.selectedProfessionals.includes(id)
-      ? (this.selectedProfessionals = this.selectedProfessionals.filter(
-          (p) => p !== id
-        ))
-      : (this.selectedProfessionals = [...this.selectedProfessionals, id]);
+    if (this.selectedProfessionals.includes(id)) {
+      this.selectedProfessionals = this.selectedProfessionals.filter(
+        (p) => p !== id
+      );
+    } else {
+      this.selectedProfessionals = [...this.selectedProfessionals, id];
+    }
+  }
+
+  isInvalid(field: any): boolean {
+    return (
+      this.submitted && (!field || (typeof field === 'string' && !field.trim()))
+    );
+  }
+
+  resetForm(): void {
+    this.name = '';
+    this.description = '';
+    this.duration = null;
+    this.price = null;
+    this.isActive = true;
+    this.selectedProfessionals = [];
   }
 
   async save(): Promise<void> {
@@ -74,7 +89,7 @@ export class ServicesFormComponent {
 
     if (!this.name || this.duration == null || this.price == null) return;
 
-    const service: Omit<Service, 'id' | 'categoryId'> = {
+    const service: Omit<Service, 'id'> = {
       name: this.name.trim(),
       description: this.description?.trim(),
       duration: this.duration,
@@ -88,20 +103,5 @@ export class ServicesFormComponent {
     this.resetForm();
     this.saving.set(false);
     this.submitted = false;
-  }
-
-  resetForm(): void {
-    this.name = '';
-    this.description = '';
-    this.duration = null;
-    this.price = null;
-    this.isActive = true;
-    this.selectedProfessionals = [];
-  }
-
-  isInvalid(field: any): boolean {
-    return (
-      this.submitted && (!field || (typeof field === 'string' && !field.trim()))
-    );
   }
 }
