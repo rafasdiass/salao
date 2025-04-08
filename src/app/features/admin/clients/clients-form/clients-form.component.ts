@@ -6,8 +6,8 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { ClientsService } from '../../../shared/services/clients.service';
-import { ClientUser } from '../../../shared/models/models';
+import { ClientsService } from '../../../../shared/services/clients.service';
+import { ClientUser } from '../../../../shared/models/models';
 
 @Component({
   selector: 'app-clients-form',
