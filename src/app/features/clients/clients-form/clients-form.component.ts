@@ -7,7 +7,7 @@ import {
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ClientsService } from '../../../shared/services/clients.service';
-import { Client } from '../../../shared/models/models';
+import { ClientUser } from '../../../shared/models/models';
 
 @Component({
   selector: 'app-clients-form',
@@ -44,7 +44,7 @@ export class ClientsFormComponent {
       nonNullable: true,
       validators: [
         Validators.required,
-        Validators.pattern(/^\(?\d{2}\)?\s?\d{4,5}-?\d{4}$/), // (99) 99999-9999
+        Validators.pattern(/^\(?\d{2}\)?\s?\d{4,5}-?\d{4}$/), // Exemplo: (99) 99999-9999
       ],
     }),
     email: new FormControl('', {
@@ -55,9 +55,7 @@ export class ClientsFormComponent {
       nonNullable: true,
       validators: [Validators.required],
     }),
-    notes: new FormControl('', {
-      nonNullable: true,
-    }),
+    notes: new FormControl('', { nonNullable: true }),
     address: new FormGroup({
       street: new FormControl('', {
         nonNullable: true,
@@ -67,9 +65,7 @@ export class ClientsFormComponent {
         nonNullable: true,
         validators: [Validators.required],
       }),
-      complement: new FormControl('', {
-        nonNullable: true,
-      }),
+      complement: new FormControl('', { nonNullable: true }),
       neighborhood: new FormControl('', {
         nonNullable: true,
         validators: [Validators.required],
@@ -107,21 +103,24 @@ export class ClientsFormComponent {
       return;
     }
 
-    const client: Omit<Client, 'id'> = {
-      name: raw.name?.trim(),
-      phone: raw.phone?.trim(),
-      email: raw.email?.trim(),
+    const client: Omit<ClientUser, 'id'> = {
+      role: 'client',
+      name: raw.name.trim(),
+      phone: raw.phone.trim(),
+      email: raw.email.trim(),
       birthDate,
-      notes: raw.notes?.trim(),
+     
+      createdAt: new Date(),
+      updatedAt: new Date(),
       address: {
-        street: raw.address.street?.trim(),
-        number: raw.address.number?.trim(),
-        complement: raw.address.complement?.trim(),
-        neighborhood: raw.address.neighborhood?.trim(),
-        city: raw.address.city?.trim(),
-        state: raw.address.state?.trim(),
-        zipCode: raw.address.zipCode?.trim(),
-        country: raw.address.country?.trim(),
+        street: raw.address.street.trim(),
+        number: raw.address.number.trim(),
+        complement: raw.address.complement.trim(),
+        neighborhood: raw.address.neighborhood.trim(),
+        city: raw.address.city.trim(),
+        state: raw.address.state.trim(),
+        zipCode: raw.address.zipCode.trim(),
+        country: raw.address.country.trim(),
       },
     };
 

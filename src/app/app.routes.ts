@@ -9,14 +9,14 @@ export const routes: Routes = [
   {
     path: 'home',
     loadComponent: () =>
-      import('./features/home/home.component').then((m) => m.HomeComponent),
+      import('./features/admin/home/home.component').then((m) => m.HomeComponent),
   },
 
   // Appointments (pai renderiza list + form)
   {
     path: 'appointments',
     loadComponent: () =>
-      import('./features/appointments/appointments.component').then(
+      import('./features/clientes/appointments/appointments.component').then(
         (m) => m.AppointmentsComponent
       ),
   },
@@ -34,7 +34,7 @@ export const routes: Routes = [
   {
     path: 'profissionais',
     loadComponent: () =>
-      import('./features/profissionais/profissionais.component').then(
+      import('./features/admin/profissionais/profissionais.component').then(
         (m) => m.ProfissionaisComponent
       ),
   },
@@ -43,7 +43,7 @@ export const routes: Routes = [
   {
     path: 'services',
     loadComponent: () =>
-      import('./features/services/services.component').then(
+      import('./features/admin/services/services.component').then(
         (m) => m.ServicesComponent
       ),
   },

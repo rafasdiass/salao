@@ -1,78 +1,110 @@
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 
+interface ExpiringItem<T> {
+  value: T;
+  expiry: number;
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class LocalStorageService {
-  constructor(@Inject(PLATFORM_ID) private platformId: object) {}
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
 
   private isBrowser(): boolean {
     return isPlatformBrowser(this.platformId);
   }
 
-  private isLocalStorageSupported(): boolean {
-    if (!this.isBrowser()) {
-      return false;
-    }
+  private checkLocalStorage(): boolean {
+    if (!this.isBrowser()) return false;
     try {
-      const testKey = '__storage_test__';
-      localStorage.setItem(testKey, 'test');
-      localStorage.removeItem(testKey);
+      localStorage.setItem('__storage_test__', 'test');
+      localStorage.removeItem('__storage_test__');
       return true;
-    } catch {
-      console.warn('localStorage não é suportado ou está desabilitado.');
+    } catch (error) {
+      console.warn('LocalStorage não é suportado ou está desabilitado.');
       return false;
     }
   }
 
-  public guardarDados<T>(chave: string, data: T): void {
-    if (this.isLocalStorageSupported()) {
+  // Método interno para salvar um item (já convertido para string)
+  private setItemInternal(key: string, data: any): void {
+    if (this.checkLocalStorage()) {
       try {
-        localStorage.setItem(chave, JSON.stringify(data));
+        localStorage.setItem(key, JSON.stringify(data));
       } catch (error) {
-        console.error('Erro ao salvar no localStorage', error);
+        console.error(`Erro ao salvar a chave ${key} no localStorage:`, error);
       }
-    } else {
-      console.warn(
-        'Tentativa de acessar localStorage em ambiente não suportado ou fora do navegador.'
-      );
     }
   }
 
-  public obterDados<T>(chave: string): T | null {
-    if (this.isLocalStorageSupported()) {
+  // Método interno para obter um item e convertê-lo de volta
+  private getItemInternal<T>(key: string): T | null {
+    if (this.checkLocalStorage()) {
       try {
-        const dadosSalvos = localStorage.getItem(chave);
-        return dadosSalvos ? (JSON.parse(dadosSalvos) as T) : null;
+        const itemStr = localStorage.getItem(key);
+        return itemStr ? (JSON.parse(itemStr) as T) : null;
       } catch (error) {
-        console.error('Erro ao ler do localStorage', error);
+        console.error(`Erro ao ler a chave ${key} do localStorage:`, error);
         return null;
       }
+    }
+    return null;
+  }
+
+  /**
+   * Salva dados no localStorage.
+   * @param key Chave de armazenamento.
+   * @param data Dados a serem armazenados.
+   * @param ttl (Opcional) Tempo de expiração em milissegundos.
+   */
+  public setItem<T>(key: string, data: T, ttl?: number): void {
+    if (ttl && ttl > 0) {
+      const item: ExpiringItem<T> = {
+        value: data,
+        expiry: new Date().getTime() + ttl,
+      };
+      this.setItemInternal(key, item);
     } else {
-      console.warn(
-        'Tentativa de acessar localStorage em ambiente não suportado ou fora do navegador.'
-      );
-      return null;
+      this.setItemInternal(key, data);
     }
   }
 
-  // Alias para obterDados
-  public getItem<T>(chave: string): T | null {
-    return this.obterDados<T>(chave);
+  /**
+   * Obtém dados do localStorage.
+   * @param key Chave de armazenamento.
+   * @param ttlCheck Se verdadeiro, verifica a expiração do item.
+   * @returns Os dados armazenados ou null se não encontrados ou expirados.
+   */
+  public getItem<T>(key: string, ttlCheck: boolean = false): T | null {
+    if (ttlCheck) {
+      const item = this.getItemInternal<ExpiringItem<T>>(key);
+      if (item) {
+        const now = new Date().getTime();
+        if (now > item.expiry) {
+          this.removeItem(key);
+          return null;
+        }
+        return item.value;
+      }
+      return null;
+    } else {
+      return this.getItemInternal<T>(key);
+    }
   }
 
-  public limparDados(chave: string): void {
-    if (this.isLocalStorageSupported()) {
+  /**
+   * Remove os dados associados à chave especificada.
+   * @param key Chave a ser removida.
+   */
+  public removeItem(key: string): void {
+    if (this.checkLocalStorage()) {
       try {
-        localStorage.removeItem(chave);
+        localStorage.removeItem(key);
       } catch (error) {
-        console.error('Erro ao remover do localStorage', error);
+        console.error(`Erro ao remover a chave ${key} do localStorage:`, error);
       }
-    } else {
-      console.warn(
-        'Tentativa de acessar localStorage em ambiente não suportado ou fora do navegador.'
-      );
     }
   }
 }

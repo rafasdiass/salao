@@ -9,14 +9,14 @@ import {
   doc,
 } from '@angular/fire/firestore';
 import { firstValueFrom } from 'rxjs';
-import { Client } from '../models/models';
+import { ClientUser } from '../models/models';
 
 @Injectable({ providedIn: 'root' })
 export class ClientsService {
   private readonly firestore = inject(Firestore);
   private readonly basePath = 'clients';
 
-  private readonly _clients = signal<Client[]>([]);
+  private readonly _clients = signal<ClientUser[]>([]);
   private readonly _loading = signal<boolean>(false);
   private readonly _error = signal<string | null>(null);
 
@@ -26,47 +26,47 @@ export class ClientsService {
   readonly hasClients = computed(() => this._clients().length > 0);
 
   constructor() {
-    this.loadClients(); // Pode manter aqui, agora que usamos firstValueFrom
+    this.loadClients();
   }
 
   async loadClients(): Promise<void> {
-    this._loading.set(true);
+    this.setLoading(true);
     this._error.set(null);
 
     try {
       const ref = collection(this.firestore, this.basePath);
       const data$ = collectionData(ref, {
         idField: 'id',
-      }) as unknown as import('rxjs').Observable<Client[]>;
+      }) as unknown as import('rxjs').Observable<ClientUser[]>;
       const clients = await firstValueFrom(data$);
       this._clients.set(clients);
     } catch (err) {
       console.error('[ClientsService] Erro ao carregar clientes:', err);
       this._error.set('Erro ao carregar clientes');
     } finally {
-      this._loading.set(false);
+      this.setLoading(false);
     }
   }
 
-  async create(client: Omit<Client, 'id'>): Promise<void> {
-    this._loading.set(true);
+  async create(client: Omit<ClientUser, 'id'>): Promise<void> {
+    this.setLoading(true);
     this._error.set(null);
 
     try {
       const ref = collection(this.firestore, this.basePath);
       const docRef = await addDoc(ref, client);
-      const newClient: Client = { ...client, id: docRef.id };
+      const newClient: ClientUser = { ...client, id: docRef.id };
       this._clients.update((list) => [...list, newClient]);
     } catch (err) {
       console.error('[ClientsService] Erro ao criar cliente:', err);
       this._error.set('Erro ao criar cliente');
     } finally {
-      this._loading.set(false);
+      this.setLoading(false);
     }
   }
 
   async delete(id: string): Promise<void> {
-    this._loading.set(true);
+    this.setLoading(true);
     this._error.set(null);
 
     try {
@@ -77,12 +77,12 @@ export class ClientsService {
       console.error('[ClientsService] Erro ao excluir cliente:', err);
       this._error.set('Erro ao excluir cliente');
     } finally {
-      this._loading.set(false);
+      this.setLoading(false);
     }
   }
 
-  async update(id: string, updated: Partial<Client>): Promise<void> {
-    this._loading.set(true);
+  async update(id: string, updated: Partial<ClientUser>): Promise<void> {
+    this.setLoading(true);
     this._error.set(null);
 
     try {
@@ -93,11 +93,11 @@ export class ClientsService {
       console.error('[ClientsService] Erro ao atualizar cliente:', err);
       this._error.set('Erro ao atualizar cliente');
     } finally {
-      this._loading.set(false);
+      this.setLoading(false);
     }
   }
 
-  updateLocal(id: string, updated: Partial<Client>): void {
+  updateLocal(id: string, updated: Partial<ClientUser>): void {
     this._clients.update((list) =>
       list.map((client) =>
         client.id === id ? { ...client, ...updated } : client
@@ -105,7 +105,11 @@ export class ClientsService {
     );
   }
 
-  getById(id: string): Client | undefined {
-    return this._clients().find((c) => c.id === id);
+  getById(id: string): ClientUser | undefined {
+    return this._clients().find((client) => client.id === id);
+  }
+
+  private setLoading(state: boolean): void {
+    this._loading.set(state);
   }
 }

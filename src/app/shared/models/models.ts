@@ -23,27 +23,36 @@ export interface Address {
   country?: string;
 }
 
-/* ========== CLIENT ========== */
-export interface Client extends BaseEntity, Person {
+/* ========== EMPRESA ========== */
+export interface Company extends BaseEntity {
+  name: string;
+  cnpj?: string;
   address: Address;
-  notes?: string;
-  preferences?: {
-    preferredServices?: string[];
-    preferredProfessionals?: string[];
-    notificationPreferences?: {
-      email?: boolean;
-      sms?: boolean;
-      whatsapp?: boolean;
-    };
-  };
-  loyaltyPoints?: number;
-  totalSpent?: number;
-  lastVisit?: Date;
+  subscriptionPlanId: string;
+  activeUntil?: Date;
+  ownerId: string;
+  currentAppointmentsCount: number;
 }
 
-/* ========== PROFESSIONAL (LEGADO - OPCIONAL) ========== */
+/* ========== PLANO DE ASSINATURA ========== */
+export interface SubscriptionPlan {
+  id: string;
+  name: 'Free' | 'Pro' | 'Unlimited';
+  price: number;
+  maxAppointmentsPerMonth: number;
+  features: string[];
+}
+
+/* ========== CLIENTE GLOBAL ========== */
+export interface ClientUser extends UserBase {
+  role: 'client';
+  favorites?: string[]; // companyIds
+}
+
+/* ========== PROFISSIONAL (LEGADO - OPCIONAL) ========== */
 export interface Professional extends BaseEntity, Person {
-  specialties: string[]; // IDs dos serviços que o profissional realiza
+  companyId: string;
+  specialties: string[];
   isActive: boolean;
   commission?: number;
   workingHours?: Record<WeekDay, { start: string; end: string }>;
@@ -59,18 +68,18 @@ export type WeekDay =
   | 'saturday'
   | 'sunday';
 
-/* ========== SERVICE ========== */
+/* ========== SERVIÇO ========== */
 export interface Service extends BaseEntity {
+  companyId: string;
   name: string;
   description?: string;
-  duration: number; // duração em minutos
+  duration: number;
   price: number;
   isActive: boolean;
   professionalsIds: string[];
 }
 
-
-/* ========== APPOINTMENT ========== */
+/* ========== AGENDAMENTO ========== */
 export type AppointmentStatus =
   | 'scheduled'
   | 'confirmed'
@@ -82,6 +91,7 @@ export type AppointmentStatus =
 export type PaymentStatus = 'pending' | 'paid' | 'partial';
 
 export interface Appointment extends BaseEntity {
+  companyId: string;
   clientId: string;
   professionalId: string;
   serviceId: string;
@@ -105,25 +115,18 @@ export interface UserBase extends Person, BaseEntity {
   isActive?: boolean;
   lastLogin?: Date;
   profileImageUrl?: string;
-  address: Address; // ✅ Agora todos os usuários possuem endereço
+  address?: Address;
 }
 
-/** Usuário administrador */
 export interface AdminUser extends UserBase {
   role: 'admin';
+  companyId: string;
   permissions?: string[];
 }
 
-/** Usuário cliente */
-export interface ClientUser extends UserBase {
-  role: 'client';
-}
-
-/** Usuário funcionário */
 export interface EmployeeUser extends UserBase {
-  id: string;
   role: 'employee';
-  isActive: boolean;
+  companyId: string;
   specialties: string[];
   commission?: number;
   workingHours?: Record<WeekDay, { start: string; end: string }>;
@@ -132,6 +135,7 @@ export interface EmployeeUser extends UserBase {
 
 /* ========== NOTIFICAÇÃO ========== */
 export interface Notification extends BaseEntity {
+  companyId: string;
   userId: string;
   title: string;
   message: string;

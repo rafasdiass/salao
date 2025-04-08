@@ -12,16 +12,22 @@ export class RegisterService {
   /**
    * Salva os dados do usuário no Firestore.
    * @param userId UID do usuário.
-   * @param userData Dados do usuário conforme o novo modelo.
+   * @param userData Dados completos do usuário.
+   * @returns true se os dados forem salvos com sucesso, false caso contrário.
    */
   async saveUserData(userId: string, userData: User): Promise<boolean> {
     try {
       const userDocRef = doc(this.firestore, this.usersCollection, userId);
       await setDoc(userDocRef, userData);
-      console.log('Dados do usuário salvos com sucesso no Firestore.');
+      console.log(
+        `[RegisterService] User data for ${userId} saved successfully.`
+      );
       return true;
     } catch (error) {
-      console.error('Erro ao salvar dados no Firestore:', error);
+      console.error(
+        `[RegisterService] Error saving user data for ${userId}:`,
+        error
+      );
       return false;
     }
   }

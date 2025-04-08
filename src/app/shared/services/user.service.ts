@@ -1,5 +1,10 @@
 import { Injectable, signal, computed, effect } from '@angular/core';
 import { User } from '../models/models';
+import { LocalStorageService } from './local-storage.service';
+
+const USER_STORAGE_KEY = 'userData';
+// Você pode definir um TTL (por exemplo, 24 horas) se desejar que os dados expirem:
+// const USER_TTL = 24 * 60 * 60 * 1000; // 24 horas em milissegundos
 
 @Injectable({
   providedIn: 'root',
@@ -12,30 +17,21 @@ export class UserService {
   // Sinal computado para indicar se o usuário está logado
   readonly isLoggedIn = computed(() => !!this._user());
 
-  constructor() {
+  constructor(private localStorageService: LocalStorageService) {
     // Carrega os dados do usuário do localStorage, se houver
-    if (typeof window !== 'undefined') {
-      const storedUser = localStorage.getItem('userData');
-      if (storedUser) {
-        try {
-          this._user.set(JSON.parse(storedUser));
-        } catch (error) {
-          console.error(
-            'Erro ao parsear os dados do usuário do storage:',
-            error
-          );
-          this._user.set(null);
-        }
-      }
+    const storedUser = this.localStorageService.getItem<User>(USER_STORAGE_KEY);
+    if (storedUser) {
+      this._user.set(storedUser);
     }
 
     // Persiste o estado do usuário no localStorage sempre que ele mudar
     effect(() => {
       const currentUser = this._user();
       if (currentUser) {
-        localStorage.setItem('userData', JSON.stringify(currentUser));
+        // Se desejar utilizar TTL, passe o valor (ex.: USER_TTL)
+        this.localStorageService.setItem(USER_STORAGE_KEY, currentUser);
       } else {
-        localStorage.removeItem('userData');
+        this.localStorageService.removeItem(USER_STORAGE_KEY);
       }
     });
   }
